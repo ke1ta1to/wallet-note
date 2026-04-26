@@ -8,3 +8,9 @@ module "cognito" {
   callback_urls = var.cognito_callback_urls
   logout_urls   = var.cognito_logout_urls
 }
+
+module "dynamodb" {
+  source = "../../modules/dynamodb"
+
+  name_prefix = local.name_prefix
+}

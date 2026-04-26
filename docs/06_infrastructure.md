@@ -100,7 +100,7 @@ CloudFront Distribution
 環境変数の例:
 
 ```
-WALLET_NOTE_TABLE=WalletNote-<env>
+WALLET_NOTE_TABLE=wallet-note-<env>
 AWS_LWA_PORT=8080
 AWS_LAMBDA_EXEC_WRAPPER=/opt/bootstrap
 ```

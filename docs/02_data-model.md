@@ -7,7 +7,7 @@ Single Table Design を採用し、マルチテナント (Organization) でテ�
 <!-- prettier-ignore -->
 | 項目 | 値 |
 |---|---|
-| 名前 | `WalletNote-<env>` (例: `WalletNote-development`) |
+| 名前 | `wallet-note-<env>` (例: `wallet-note-development`) |
 | 課金モード | PAY_PER_REQUEST |
 | PITR | 有効 |
 | TTL 属性 | `expiresAt` (Unix epoch 秒) |
