@@ -27,13 +27,14 @@ terraform {
 ```
 infrastructure/
 ├── modules/
-│   ├── auth/        Cognito User Pool + Client + Managed Login UI Domain
-│   ├── data/        DynamoDB Table (PK/SK + GSI1, TTL, PITR, on-demand)
+│   ├── cognito/     User Pool + Client + Managed Login UI Domain + Branding
+│   ├── dynamodb/    DynamoDB Table (PK/SK + GSI1, TTL, PITR, on-demand)
 │   ├── api/         Lambda (LWA Layer, arm64) + API GW HTTP API + JWT Authorizer + IAM Role
 │   └── frontend/    S3 (no public, OAC) + CloudFront (S3 + API GW origins)
 └── environments/
     ├── development/
     │   ├── main.tf       modules を組み合わせる
+    │   ├── locals.tf     name_prefix などの派生値
     │   ├── variables.tf
     │   ├── outputs.tf
     │   ├── backend.tf    S3 backend 設定
@@ -44,6 +45,12 @@ infrastructure/
 ```
 
 新しい環境を追加するときは `environments/<env>/` をコピーして tfvars だけ書き換える。
+
+## 命名規約
+
+`locals.name_prefix = "${var.project}-${var.environment}"` を組み立て、各 module に `name_prefix` として渡す。各 module はその prefix から個別リソース名を生成する (例: `${var.name_prefix}-spa`)。
+
+これにより全リソースが `<project>-<env>-...` で揃い、AWS Console での視認性と環境追加のしやすさを両立する。
 
 ## ドメイン
 

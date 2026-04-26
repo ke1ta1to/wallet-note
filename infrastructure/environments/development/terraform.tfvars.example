@@ -1,2 +1,3 @@
+project     = "wallet-note"
 environment = "development"
 region      = "ap-northeast-1"
