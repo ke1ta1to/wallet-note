@@ -30,7 +30,7 @@ infrastructure/
 │   ├── cognito/     User Pool + Client + Managed Login UI Domain + Branding
 │   ├── dynamodb/    DynamoDB Table (PK/SK + GSI1, TTL, PITR, on-demand)
 │   ├── api/         Lambda (LWA Layer, arm64) + API GW HTTP API + JWT Authorizer + IAM Role
-│   └── frontend/    S3 (no public, OAC) + CloudFront (S3 + API GW origins)
+│   └── web-client/  S3 (no public, OAC) + CloudFront (S3 + API GW origins)
 └── environments/
     ├── development/
     │   ├── main.tf       modules を組み合わせる
@@ -68,7 +68,7 @@ Distribution は2つの Origin (S3 と API Gateway) を持つ。
 
 ```
 CloudFront Distribution
-├─ Origin 1: S3 (frontend, OAC)
+├─ Origin 1: S3 (web-client, OAC)
 ├─ Origin 2: API Gateway HTTP API
 │
 ├─ Default Behavior (* → S3)
@@ -109,6 +109,6 @@ IAM Role は DynamoDB CRUD と CloudWatch Logs に絞る。
 
 ## デプロイ責務の分離
 
-Terraform は AWS リソースの「箱」だけ定義する。Lambda コードのバイナリと Frontend のビルド成果物は別ルートでデプロイする。
+Terraform は AWS リソースの「箱」だけ定義する。Lambda コードのバイナリと Web Client のビルド成果物は別ルートでデプロイする。
 
 GitHub Actions のワークフロー側に直接デプロイコマンドを書き、ローカル動作確認用には `scripts/` 配下にシェルスクリプトを置く。両者は意図的に共通化せず、それぞれシンプルに保つ。詳細は 07_cicd.md と 08_local-dev.md を参照。

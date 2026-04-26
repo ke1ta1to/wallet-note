@@ -7,8 +7,8 @@
 <!-- prettier-ignore -->
 | 領域 | 採用 |
 |---|---|
-| Frontend | React 19 + Vite + TypeScript + TanStack Router + Mantine |
-| Backend | Go (Lambdalith) + AWS Lambda Web Adapter (LWA, arm64) |
+| Web Client | React 19 + Vite + TypeScript + TanStack Router + Mantine |
+| Web Server | Go (Lambdalith) + AWS Lambda Web Adapter (LWA, arm64) |
 | 認証 | Amazon Cognito (Managed Login UI) |
 | API | API Gateway HTTP API + JWT Authorizer |
 | データ | DynamoDB (Single Table, on-demand, PITR 有効) |
@@ -23,8 +23,8 @@
 ```
 wallet-note/
 ├── openapi/              OpenAPI SOT (手書き)
-├── web-client/           Frontend
-├── web-server/           Backend (Go)
+├── web-client/           Web Client
+├── web-server/           Web Server (Go)
 ├── infrastructure/       Terraform
 ├── docs/                 設計ドキュメント (本ディレクトリ)
 └── scripts/              ローカル/開発用シェルスクリプト
@@ -67,7 +67,7 @@ GitHub Environment 名は `Production` / `Development` (先頭大文字)、Terra
 2. [02_data-model.md](./02_data-model.md) — DynamoDB 設計
 3. [03_auth.md](./03_auth.md) — Cognito + API Gateway
 4. [04_web-server.md](./04_web-server.md) — Go Lambda コード構造
-5. [05_web-client.md](./05_web-client.md) — Frontend
+5. [05_web-client.md](./05_web-client.md) — Web Client
 6. [06_infrastructure.md](./06_infrastructure.md) — Terraform
 7. [07_cicd.md](./07_cicd.md) — GitHub Actions
 8. [08_local-dev.md](./08_local-dev.md) — ローカル開発

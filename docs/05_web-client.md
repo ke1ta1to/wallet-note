@@ -55,7 +55,7 @@ OpenAPI YAML はリポジトリルート直下の `openapi/openapi.yaml` を SOT
 
 型は `web-client/src/api/schema.d.ts` に `openapi-typescript` で自動生成する。API クライアントは `openapi-fetch` で組み、パス・クエリ・レスポンスがすべて型推論される。
 
-バックエンド (Go) との同期は手動で行う (`go-playground/validator/v10` の struct tag を openapi.yaml の制約と合わせる)。本格化したら `oapi-codegen` の導入を検討する。
+Web Server (Go) との同期は手動で行う (`go-playground/validator/v10` の struct tag を openapi.yaml の制約と合わせる)。本格化したら `oapi-codegen` の導入を検討する。
 
 ## フォルダ構造
 

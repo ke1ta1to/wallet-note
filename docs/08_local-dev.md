@@ -7,16 +7,16 @@ dev 環境の AWS リソースを直接使う。DynamoDB Local や Cognito Local
 <!-- prettier-ignore -->
 | コンポーネント | 接続先 |
 |---|---|
-| DynamoDB | dev 環境の本物 (`WalletNote-development`) |
+| DynamoDB | dev 環境の本物 (`wallet-note-development`) |
 | Cognito | dev 環境の本物 (Managed Login UI 含む) |
 | Lambda Go アプリ | ローカルで `go run ./cmd/server` (LWA は経由せず普通の HTTP サーバ) |
-| Frontend | Vite dev server |
+| Web Client | Vite dev server |
 
-## 認証検証 (バックエンドコードに分岐を入れない)
+## 認証検証 (Web Server コードに分岐を入れない)
 
-「`LOCAL_DEV=true` なら認証バイパス」のような環境変数による分岐をバックエンドに入れない。環境変数の設定ミスで本番環境でも認証スキップになる穴を作りたくないため。
+「`LOCAL_DEV=true` なら認証バイパス」のような環境変数による分岐を Web Server に入れない。環境変数の設定ミスで本番環境でも認証スキップになる穴を作りたくないため。
 
-代わりに、Vite proxy 層で `x-amzn-request-context` ヘッダを fake 付与する。バックエンドは本番と完全に同じコード (`x-amzn-request-context` から claims を取り出すだけ) のまま動かせる。Vite dev server は本番では使われないので、この捏造は本番に一切影響しない。
+代わりに、Vite proxy 層で `x-amzn-request-context` ヘッダを fake 付与する。Web Server は本番と完全に同じコード (`x-amzn-request-context` から claims を取り出すだけ) のまま動かせる。Vite dev server は本番では使われないので、この捏造は本番に一切影響しない。
 
 JWT 自体は本物の Cognito から取ったものを使うため、payload の中身は信頼できる。署名検証はローカルでは省略する (本番側は API Gateway が検証している)。
 
@@ -59,10 +59,10 @@ Vite proxy で `/api/*` を `http://localhost:8080` に流す。
 
 ## 環境変数
 
-バックエンド:
+Web Server:
 
 ```
-WALLET_NOTE_TABLE=WalletNote-development
+WALLET_NOTE_TABLE=wallet-note-development
 AWS_REGION=ap-northeast-1
 ```
 
@@ -93,9 +93,9 @@ VITE_COGNITO_DOMAIN=wallet-note-dev-xxxxx.auth.ap-northeast-1.amazoncognito.com
 | `make dev-client` | Vite dev server 起動 |
 | `make gen-api` | OpenAPI から型生成 |
 | `make test` | go test |
-| `make lint` | go vet + frontend lint |
+| `make lint` | go vet + web-client lint |
 | `make deploy-server-dev` | Lambda Go ビルド + update-function-code (development) |
-| `make deploy-client-dev` | Frontend build + S3 sync + CloudFront invalidate (development) |
+| `make deploy-client-dev` | Web Client build + S3 sync + CloudFront invalidate (development) |
 | `make tf-plan-dev` | development の terraform plan |
 | `make tf-apply-dev` | development の terraform apply |
 | `make tf-plan-prod` | production の terraform plan (apply は GitHub release 経由のみ) |
@@ -118,7 +118,7 @@ CI (GitHub Actions) はこの pnpm scripts を直接叩く。Makefile を経由�
 
 ```
 scripts/deploy-server-dev.sh   Lambda Go ビルド + update-function-code
-scripts/deploy-client-dev.sh   Frontend build + S3 sync + CloudFront invalidate
+scripts/deploy-client-dev.sh   Web Client build + S3 sync + CloudFront invalidate
 ```
 
 production 用は基本作らない。production へのデプロイは GitHub Release 経由が原則。

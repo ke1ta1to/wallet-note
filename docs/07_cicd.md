@@ -6,11 +6,11 @@
 .github/workflows/
 ├── infrastructure.yml         Terraform plan / apply
 ├── web-server.yml             Lambda Go build + deploy
-├── web-client.yml             Frontend build + deploy
+├── web-client.yml             Web Client build + deploy
 ├── openapi.yml                PR で schema.d.ts 差分チェックのみ
 ├── _terraform-apply.yml       Reusable
 ├── _lambda-deploy.yml         Reusable
-└── _frontend-deploy.yml       Reusable
+└── _web-client-deploy.yml    Reusable
 ```
 
 ## 命名と環境
@@ -79,4 +79,4 @@ PR でのみ実行する。`pnpm run generate:api` を走らせて `web-client/s
 
 ## 値の伝達
 
-`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-api-<env>`、`wallet-note-frontend-<env>`)。
+`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-api-<env>`、`wallet-note-web-client-<env>`)。
