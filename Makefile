@@ -17,3 +17,12 @@ tf-apply-dev:
 .PHONY: deploy-server-dev
 deploy-server-dev:
 	./scripts/deploy-server-dev.sh
+
+.PHONY: test
+test:
+	docker compose up -d dynamodb-local
+	cd web-server && go test ./...
+
+.PHONY: test-down
+test-down:
+	docker compose down

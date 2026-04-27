@@ -6,8 +6,21 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/ke1ta1to/wallet-note/internal/shared/apperror"
 )
+
+var validate = validator.New()
+
+func DecodeJSON(r *http.Request, dst any) error {
+	if err := json.NewDecoder(r.Body).Decode(dst); err != nil {
+		return apperror.ErrInvalidInput
+	}
+	if err := validate.Struct(dst); err != nil {
+		return apperror.ErrInvalidInput
+	}
+	return nil
+}
 
 func WriteJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

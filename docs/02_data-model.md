@@ -21,13 +21,14 @@ Single Table Design を採用し、マルチテナント (Organization) でテ�
 
 ```
 PK                   SK                          GSI1PK                  GSI1SK
-USER#<userId>        META                        ─                       ─
 USER#<userId>        ORG#<orgId>                 ORG#<orgId>             USER#<userId>
 ORG#<orgId>          META                        ─                       ─
 ORG#<orgId>          CATEGORY#<categoryId>       ─                       ─
 ORG#<orgId>          TX#<yyyy-mm-dd>#<txId>      ORG#<orgId>#CAT#<catId> TX#<yyyy-mm-dd>
 ORG#<orgId>          INVITE#<code>               INVITE#<code>           META
 ```
+
+ユーザは Cognito 側で識別され、本テーブルに User entity は持たない。`userId` (= Cognito `sub`) は Membership の `PK=USER#<userId>` で間接的に存在する。displayName / email など表示用の属性は Cognito の token から取る。
 
 ## アクセスパターン
 
@@ -44,7 +45,6 @@ ORG#<orgId>          INVITE#<code>               INVITE#<code>           META
 | AP8 | org × 月 × カテゴリで取引 | `Query` GSI1, `GSI1PK=ORG#<o>#CAT#<c>` `begins_with(GSI1SK,"TX#2026-04")` |
 | AP9 | 取引 1件取得 | `GetItem` Base, `PK=ORG#<o>` `SK=TX#<date>#<tx>` |
 | AP10 | 招待コード逆引き | `Query` GSI1, `GSI1PK=INVITE#<code>` |
-| AP11 | ユーザープロフィール取得 | `GetItem` Base, `PK=USER#<u>` `SK=META` |
 
 ## GSI1 の用途
 
@@ -58,22 +58,6 @@ GSI1 は3用途を兼ねる。`GSI1PK` の prefix がそれぞれ `ORG#<o>` / `O
 | 招待コード逆引き | `INVITE#<code>` | `META` |
 
 ## エンティティ属性
-
-User:
-
-```json
-{
-  "PK": "USER#<u>",
-  "SK": "META",
-  "type": "User",
-  "userId": "<u>",
-  "email": "...",
-  "displayName": "...",
-  "createdAt": "..."
-}
-```
-
-`userId` は Cognito の `sub` をそのまま使う。
 
 Membership:
 
@@ -171,7 +155,7 @@ Invite:
 
 ## ID 採番
 
-`userId` は Cognito の `sub` をそのまま使う。`orgId` / `categoryId` / `txId` は ULID。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
+`userId` は Cognito の `sub` をそのまま使う。`orgId` / `categoryId` / `txId` は **UUIDv7** (RFC 9562、時系列 sortable)。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
 
 ## マルチテナント分離
 
@@ -180,6 +164,16 @@ Invite:
 ## 認可
 
 org スコープの API はすべて AP2 (`GetItem(USER#<u>, ORG#<o>)`) を最初に通し、Membership の有無と role を判定する。
+
+## 主要操作
+
+### 組織作成 (`POST /orgs`)
+
+`ORG#<o>/META` (Organization) と `USER#<u>/ORG#<o>` (Membership, role=owner) を `TransactWriteItems` でアトミックに作成する。Org 単独で `PutItem` すると、Membership 書き込み失敗時に owner の居ない孤児 Org が残るため。
+
+### 所属 org 一覧 (`GET /me/orgs`)
+
+AP1 で Membership 一覧を引いたあと、得られた orgId 群を `BatchGetItem` で `ORG#<o>/META` から取得し、orgName と join して返す。Membership に orgName を冗長保存しないため、Org 名変更時の cascade 更新は不要。
 
 ## 集計
 

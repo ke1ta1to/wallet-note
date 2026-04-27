@@ -92,7 +92,7 @@ VITE_COGNITO_DOMAIN=wallet-note-dev-xxxxx.auth.ap-northeast-1.amazoncognito.com
 | `make dev-server` | Go HTTP サーバ起動 |
 | `make dev-client` | Vite dev server 起動 |
 | `make gen-api` | OpenAPI から型生成 |
-| `make test` | go test |
+| `make test` | DDB Local (docker compose) を起動してから `go test`。詳細は 04_web-server.md のテスト戦略 |
 | `make lint` | go vet + web-client lint |
 | `make deploy-server-dev` | Lambda Go ビルド + update-function-code (development) |
 | `make deploy-client-dev` | Web Client build + S3 sync + CloudFront invalidate (development) |
