@@ -73,8 +73,7 @@ CloudFront Distribution
 │
 ├─ Default Behavior (* → S3)
 │    ├─ Viewer Protocol: HTTPS only
-│    ├─ Cache: hashed assets max-age=31536000、index.html no-cache
-│    └─ Custom Error Response: 403/404 → /index.html (200) ※ SPA fallback
+│    └─ Cache: hashed assets max-age=31536000、index.html no-cache
 │
 └─ Behavior /api/* → API Gateway Origin
      ├─ Cache: Disabled
@@ -83,6 +82,12 @@ CloudFront Distribution
 ```
 
 `Authorization` ヘッダの転送漏れは詰みポイントなので注意する。
+
+## SPA fallback
+
+`custom_error_response` (distribution 全体の 403/404 → `/index.html`) は採用しない。distribution-level で適用されるため `/api/*` の 403/404 まで `/index.html` に書き換えてしまい、API レスポンスが壊れる。
+
+代わりに web-client React を構築するタイミングで、default behavior に **CloudFront Function (viewer-request)** を attach し、`/api/*` を除外しつつ拡張子なしのパスを `/index.html` に rewrite する形で SPA fallback を実装する。これは AWS 公式が SPA + API 混在 distribution に推奨するパターン。
 
 ## Cognito Callback URL
 
