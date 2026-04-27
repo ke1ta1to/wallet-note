@@ -78,7 +78,7 @@ CloudFront Distribution
 │
 └─ Behavior /api/* → API Gateway Origin
      ├─ Cache: Disabled
-     ├─ Origin Request Policy: AllViewer (Authorization ヘッダ等を転送)
+     ├─ Origin Request Policy: AllViewerExceptHostHeader (公式 docs が API GW origin にはこれを推奨)
      └─ Forward Authorization header (重要)
 ```
 

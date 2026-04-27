@@ -83,8 +83,9 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      AWS_LWA_PORT      = "8080"
-      WALLET_NOTE_TABLE = var.dynamodb_table_name
+      AWS_LWA_PORT             = "8080"
+      AWS_LWA_REMOVE_BASE_PATH = "/api"
+      WALLET_NOTE_TABLE        = var.dynamodb_table_name
     }
   }
 

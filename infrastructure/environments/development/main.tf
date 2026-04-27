@@ -24,8 +24,9 @@ module "dynamodb" {
 module "web_client" {
   source = "../../modules/web-client"
 
-  name_prefix = local.name_prefix
-  account_id  = data.aws_caller_identity.current.account_id
+  name_prefix   = local.name_prefix
+  account_id    = data.aws_caller_identity.current.account_id
+  api_gw_domain = trimprefix(module.web_server.api_endpoint, "https://")
 }
 
 module "web_server" {
