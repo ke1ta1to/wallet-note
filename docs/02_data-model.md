@@ -147,6 +147,8 @@ Transaction:
 
 `amount` は整数 (円単位)。
 
+`date` は SK と GSI1SK の両方に含まれるため、PATCH で日付を変更する場合は属性更新では済まず、旧 item の delete + 新 item の put を `TransactWriteItems` でアトミックに行う。
+
 Invite:
 
 ```json
@@ -164,6 +166,8 @@ Invite:
   "createdAt": "..."
 }
 ```
+
+`expiresAt` は DynamoDB TTL 属性だが、TTL の削除は最大 48 時間遅れる。招待検証 (`GET /invites/{code}`、`POST /invites/{code}/accept`) は必ずアプリ側で `expiresAt > now` を確認する。TTL はストレージ掃除のみと見なす。
 
 ## ID 採番
 
