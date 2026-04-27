@@ -4,7 +4,7 @@ dev:
 
 .PHONY: dev-server
 dev-server:
-	cd web-server && go run ./cmd/wallet-note
+	cd web-server && WALLET_NOTE_TABLE=wallet-note-development go run ./cmd/wallet-note
 
 .PHONY: dev-client
 dev-client:
