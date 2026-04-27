@@ -83,9 +83,9 @@ DTO はドメインモデルと分離する。内部表現と API のレスポ�
 
 機能パッケージ (`organization`, `transaction`, …) は次の責務で構成する:
 
-- **handler**: HTTP I/O のみ。リクエスト解析 → repository / service 呼び出し → レスポンス書き込み
-- **repository (interface)**: 1 エンティティの永続化契約。`feature/repository.go` で interface を宣言、`dynamo.go` などで実装
-- **service**: 複数 repository をまたぐ処理 (`TransactWriteItems`、cross-entity 整合性)。**最初から作らず、必要が出たタイミングで追加**
+- handler は HTTP I/O のみ。リクエスト解析 → repository / service 呼び出し → レスポンス書き込み
+- repository は1エンティティの永続化契約。`feature/repository.go` で interface を宣言、`dynamo.go` などで実装
+- service は複数 repository をまたぐ処理 (`TransactWriteItems`、cross-entity 整合性)。最初から作らず、必要が出たタイミングで追加する
 
 handler は repository (interface) を直接持ち、CRUD はそれだけで完結する。複数 repository を跨ぐ処理 (例: `POST /orgs` の Org + Membership atomic 作成) が出たときに service.go を導入する。
 
@@ -93,7 +93,7 @@ repository は interface (storage 差し替えの余地、テストでの mock �
 
 ## テスト戦略
 
-**Rails の request test 主体方針** を Go に持ち込む。Handler から full stack を通して実 DDB に当てるテストを default にし、内部 layer (service / repository) の細かい unit test は基本書かない。
+Rails の request test 主体方針を Go に持ち込む。Handler から full stack を通して実 DDB に当てるテストを default にし、内部 layer (service / repository) の細かい unit test は基本書かない。
 
 | レイヤ | テスト種別 | 手段 |
 |---|---|---|
@@ -106,14 +106,17 @@ repository は interface (storage 差し替えの余地、テストでの mock �
 
 ### テスト基盤
 
-- **DDB Local を docker compose で起動**。`amazon/dynamodb-local:latest` を `docker-compose.yml` で定義、`make test` が `docker compose up -d dynamodb-local` を経由してから `go test` を呼ぶ
-- Test 用 table 名は `wallet-note-test` (固定)。Schema 定義は `internal/testutils/ddb.go` の `createTable` 関数に集約 (Terraform 側 schema と手動同期)
-- Test 間の隔離は **各 test の冒頭で全 item を delete** (`testutils.ResetTable`)。table は使い回し
-- testcontainers-go は採用しない。docker compose で十分シンプルで、起動忘れは Makefile target で潰せる
+DDB Local を docker compose で起動する。`amazon/dynamodb-local:latest` を `docker-compose.yml` で定義し、`make test` が `docker compose up -d dynamodb-local` を経由してから `go test` を呼ぶ。
+
+Test 用 table 名は `wallet-note-test` (固定)。Schema 定義は `internal/testutils/ddb.go` の `createTable` 関数に集約する (Terraform 側 schema と手動同期)。
+
+Test 間の隔離は各 test の冒頭で全 item を delete する (`testutils.ResetTable`)。table は使い回す。
+
+testcontainers-go は採用しない。docker compose で十分シンプルで、起動忘れは Makefile target で潰せる。
 
 ### Mock 戦略
 
-Repository / Service は **mock せず実物を使う**。Mock 手書きや `mockery` / `gomock` のコード生成は不要。Request test で full stack を通す方針なら、Repository / Service の内部仕様変更は HTTP 入出力 + DDB 状態の合意でしか検証されない (= refactor 耐性が高い)。
+Repository / Service は mock せず実物を使う。Mock 手書きや `mockery` / `gomock` のコード生成は不要。Request test で full stack を通す方針なら、Repository / Service の内部仕様変更は HTTP 入出力 + DDB 状態の合意でしか検証されない (= refactor 耐性が高い)。
 
 ペイロードは snake_case。ID はすべて UUIDv7 文字列、日付は `YYYY-MM-DD`、タイムスタンプは ISO8601。バリデーションは `go-playground/validator/v10` の struct tag で書く。OpenAPI の制約 (required, pattern 等) と struct tag は手動で同期する。本格化したら `oapi-codegen` での自動化を検討する。
 

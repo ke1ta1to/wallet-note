@@ -155,7 +155,7 @@ Invite:
 
 ## ID 採番
 
-`userId` は Cognito の `sub` をそのまま使う。`orgId` / `categoryId` / `txId` は **UUIDv7** (RFC 9562、時系列 sortable)。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
+`userId` は Cognito の `sub` をそのまま使う。`orgId` / `categoryId` / `txId` は UUIDv7 (RFC 9562、時系列 sortable)。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
 
 ## マルチテナント分離
 

@@ -87,7 +87,7 @@ CloudFront Distribution
 
 `custom_error_response` (distribution 全体の 403/404 → `/index.html`) は採用しない。distribution-level で適用されるため `/api/*` の 403/404 まで `/index.html` に書き換えてしまい、API レスポンスが壊れる。
 
-代わりに web-client React を構築するタイミングで、default behavior に **CloudFront Function (viewer-request)** を attach し、`/api/*` を除外しつつ拡張子なしのパスを `/index.html` に rewrite する形で SPA fallback を実装する。これは AWS 公式が SPA + API 混在 distribution に推奨するパターン。
+代わりに web-client React を構築するタイミングで、default behavior に CloudFront Function (viewer-request) を attach し、`/api/*` を除外しつつ拡張子なしのパスを `/index.html` に rewrite する形で SPA fallback を実装する。これは AWS 公式が SPA + API 混在 distribution に推奨するパターン。
 
 ## Cognito Callback URL
 
