@@ -13,13 +13,14 @@ React 19 + Vite + TanStack Router + Mantine。スマホで触ることを前提�
 | UI | Mantine 9+ (PostCSS 設定済み) |
 | Server state | TanStack Query |
 | UI state | Zustand |
-| Auth | AWS Amplify Auth v6 (`@aws-amplify/auth` のみ、CLI/UI 系は使わない) |
+| Auth | AWS Amplify v6 (`aws-amplify` umbrella、import は `aws-amplify` / `aws-amplify/auth` / `aws-amplify/utils` で tree-shake、CLI/UI 系は使わない) |
 | API クライアント | openapi-typescript + openapi-fetch |
+| Search validation | valibot + `@tanstack/valibot-adapter` |
 
 ## URL 設計
 
 ```
-/login                                       Cognito Managed Login UI へリダイレクト
+/sign-in                                     Cognito Managed Login UI へリダイレクト
 /auth/callback                               Cognito からの戻り
 /invite          ?code=AB7XQ9                招待コード入力 / 受諾
 /orgs                                        所属 org 一覧 (org 選択)

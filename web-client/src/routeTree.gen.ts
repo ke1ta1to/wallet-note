@@ -9,38 +9,100 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PublicRouteImport } from './routes/_public'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PublicSignInRouteImport } from './routes/_public/sign-in'
+import { Route as AuthedOrgsRouteImport } from './routes/_authed/orgs'
+import { Route as PublicAuthCallbackRouteImport } from './routes/_public/auth.callback'
 
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicSignInRoute = PublicSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => PublicRoute,
+} as any)
+const AuthedOrgsRoute = AuthedOrgsRouteImport.update({
+  id: '/orgs',
+  path: '/orgs',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const PublicAuthCallbackRoute = PublicAuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => PublicRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/orgs': typeof AuthedOrgsRoute
+  '/sign-in': typeof PublicSignInRoute
+  '/auth/callback': typeof PublicAuthCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/orgs': typeof AuthedOrgsRoute
+  '/sign-in': typeof PublicSignInRoute
+  '/auth/callback': typeof PublicAuthCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
+  '/_authed/orgs': typeof AuthedOrgsRoute
+  '/_public/sign-in': typeof PublicSignInRoute
+  '/_public/auth/callback': typeof PublicAuthCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/orgs' | '/sign-in' | '/auth/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/orgs' | '/sign-in' | '/auth/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/_public'
+    | '/_authed/orgs'
+    | '/_public/sign-in'
+    | '/_public/auth/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +110,58 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/sign-in': {
+      id: '/_public/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof PublicSignInRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_authed/orgs': {
+      id: '/_authed/orgs'
+      path: '/orgs'
+      fullPath: '/orgs'
+      preLoaderRoute: typeof AuthedOrgsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_public/auth/callback': {
+      id: '/_public/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof PublicAuthCallbackRouteImport
+      parentRoute: typeof PublicRoute
+    }
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedOrgsRoute: typeof AuthedOrgsRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedOrgsRoute: AuthedOrgsRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
+interface PublicRouteChildren {
+  PublicSignInRoute: typeof PublicSignInRoute
+  PublicAuthCallbackRoute: typeof PublicAuthCallbackRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicSignInRoute: PublicSignInRoute,
+  PublicAuthCallbackRoute: PublicAuthCallbackRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

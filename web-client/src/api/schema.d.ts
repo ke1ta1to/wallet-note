@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /** Current user */
-        get: operations["getMe"];
+        get: operations["get_me"];
         put?: never;
         post?: never;
         delete?: never;
@@ -29,7 +29,7 @@ export interface paths {
             cookie?: never;
         };
         /** My organization memberships */
-        get: operations["getMyOrgs"];
+        get: operations["get_my_orgs"];
         put?: never;
         post?: never;
         delete?: never;
@@ -48,7 +48,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create organization (caller becomes owner) */
-        post: operations["createOrg"];
+        post: operations["create_org"];
         delete?: never;
         options?: never;
         head?: never;
@@ -63,7 +63,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get organization (member required) */
-        get: operations["getOrg"];
+        get: operations["get_org"];
         put?: never;
         post?: never;
         delete?: never;
@@ -79,30 +79,24 @@ export interface components {
         Error: {
             message: string;
         };
-        MeResponse: {
+        Me: {
             /** @description Cognito sub */
             id: string;
             username: string;
         };
-        OrgResponse: {
+        Organization: {
             id: string;
             name: string;
             /** Format: date-time */
             created_at: string;
         };
-        MembershipResponse: {
+        Membership: {
             org_id: string;
             org_name?: string;
             /** @enum {string} */
             role: "owner" | "member";
             /** Format: date-time */
             joined_at: string;
-        };
-        MyOrgsResponse: {
-            items: components["schemas"]["MembershipResponse"][];
-        };
-        CreateOrgRequest: {
-            name: string;
         };
     };
     responses: never;
@@ -113,7 +107,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getMe: {
+    get_me: {
         parameters: {
             query?: never;
             header?: never;
@@ -128,7 +122,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MeResponse"];
+                    "application/json": components["schemas"]["Me"];
                 };
             };
             /** @description Unauthorized */
@@ -142,7 +136,7 @@ export interface operations {
             };
         };
     };
-    getMyOrgs: {
+    get_my_orgs: {
         parameters: {
             query?: never;
             header?: never;
@@ -157,7 +151,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MyOrgsResponse"];
+                    "application/json": {
+                        items: components["schemas"]["Membership"][];
+                    };
                 };
             };
             /** @description Unauthorized */
@@ -171,7 +167,7 @@ export interface operations {
             };
         };
     };
-    createOrg: {
+    create_org: {
         parameters: {
             query?: never;
             header?: never;
@@ -180,7 +176,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateOrgRequest"];
+                "application/json": {
+                    name: string;
+                };
             };
         };
         responses: {
@@ -190,7 +188,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrgResponse"];
+                    "application/json": components["schemas"]["Organization"];
                 };
             };
             /** @description Invalid input */
@@ -213,7 +211,7 @@ export interface operations {
             };
         };
     };
-    getOrg: {
+    get_org: {
         parameters: {
             query?: never;
             header?: never;
@@ -230,7 +228,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrgResponse"];
+                    "application/json": components["schemas"]["Organization"];
                 };
             };
             /** @description Unauthorized */

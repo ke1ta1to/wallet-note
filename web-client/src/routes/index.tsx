@@ -1,10 +1,7 @@
-import { Title } from "@mantine/core";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  beforeLoad: () => {
+    throw redirect({ to: "/orgs" });
+  },
 });
-
-function Index() {
-  return <Title order={1}>wallet-note</Title>;
-}
