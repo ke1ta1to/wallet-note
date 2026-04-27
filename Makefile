@@ -1,6 +1,14 @@
+.PHONY: dev
+dev:
+	$(MAKE) -j 2 dev-server dev-client
+
 .PHONY: dev-server
 dev-server:
 	cd web-server && go run ./cmd/wallet-note
+
+.PHONY: dev-client
+dev-client:
+	cd web-client && pnpm dev
 
 .PHONY: lint
 lint:
