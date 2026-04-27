@@ -79,4 +79,4 @@ PR でのみ実行する。`pnpm run generate:api` を走らせて `web-client/s
 
 ## 値の伝達
 
-`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-api-<env>`、`wallet-note-web-client-<env>`)。
+`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-<env>-api`、`wallet-note-<env>-web-client-<account_id>`)。

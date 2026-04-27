@@ -14,3 +14,10 @@ module "dynamodb" {
 
   name_prefix = local.name_prefix
 }
+
+module "web_client" {
+  source = "../../modules/web-client"
+
+  name_prefix = local.name_prefix
+  account_id  = data.aws_caller_identity.current.account_id
+}
