@@ -101,10 +101,13 @@ CloudFront Distribution
 
 ```
 WALLET_NOTE_TABLE=wallet-note-<env>
-AWS_LWA_PORT=8080
+PORT=8080                          # LWA と Go app が同じ env を読む
+AWS_LWA_REMOVE_BASE_PATH=/api      # /api/* prefix を Go に渡す前に剥がす
 ```
 
 `provided.al2023` では Lambda が `bootstrap` を直接 exec し、LWA は Lambda Extension として動くため `AWS_LAMBDA_EXEC_WRAPPER` は不要 (これは managed runtime + zip の場合に使う変数)。
+
+`PORT` は LWA の `AWS_LWA_PORT` の fallback (公式 gin-zip サンプルもこの形式)。1つの env var で LWA forward 先と Go listen port をペアリングし、ずれる余地を消す。
 
 IAM Role は DynamoDB CRUD と CloudWatch Logs に絞る。
 

@@ -1,21 +1,35 @@
 package main
 
 import (
-	"log"
+	"cmp"
+	"log/slog"
 	"net/http"
+	"os"
+
+	"github.com/ke1ta1to/wallet-note/internal/shared/router"
+	"github.com/ke1ta1to/wallet-note/internal/user"
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("hello from wallet-note\n"))
-	})
+	setupLogger()
 
-	addr := ":8080"
-	log.Printf("listening on %s", addr)
+	addr := ":" + cmp.Or(os.Getenv("PORT"), "8080")
+	slog.Info("listening", "addr", addr)
+
+	mux := router.New(user.New())
 	if err := http.ListenAndServe(addr, mux); err != nil {
-		log.Fatal(err)
+		slog.Error("server stopped", "err", err)
+		os.Exit(1)
 	}
+}
+
+// JSON output on Lambda for CloudWatch Logs Insights, text locally for humans.
+func setupLogger() {
+	var handler slog.Handler
+	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") != "" {
+		handler = slog.NewJSONHandler(os.Stdout, nil)
+	} else {
+		handler = slog.NewTextHandler(os.Stdout, nil)
+	}
+	slog.SetDefault(slog.New(handler))
 }

@@ -45,3 +45,12 @@ output "web_server_lambda_function_name" {
 output "web_server_api_endpoint" {
   value = module.web_server.api_endpoint
 }
+
+output "test_user_email" {
+  value = aws_cognito_user.test.username
+}
+
+output "test_user_password" {
+  value     = random_password.test_user.result
+  sensitive = true
+}

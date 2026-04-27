@@ -83,7 +83,9 @@ resource "aws_lambda_function" "this" {
 
   environment {
     variables = {
-      AWS_LWA_PORT             = "8080"
+      # PORT is read by both LWA (fallback for AWS_LWA_PORT) and the Go app, so
+      # they cannot drift.
+      PORT                     = "8080"
       AWS_LWA_REMOVE_BASE_PATH = "/api"
       WALLET_NOTE_TABLE        = var.dynamodb_table_name
     }

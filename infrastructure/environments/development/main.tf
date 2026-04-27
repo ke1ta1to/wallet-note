@@ -13,6 +13,7 @@ module "cognito" {
     "https://${module.web_client.distribution_domain}/",
     "http://localhost:5173/",
   ]
+  allow_admin_password_auth = true
 }
 
 module "dynamodb" {
@@ -38,4 +39,28 @@ module "web_server" {
   dynamodb_table_arn          = module.dynamodb.table_arn
   cognito_user_pool_id        = module.cognito.user_pool_id
   cognito_user_pool_client_id = module.cognito.user_pool_client_id
+}
+
+# Pre-provisioned test user for CLI-driven E2E checks.
+# Dev only; production environments must not include this.
+resource "random_password" "test_user" {
+  length           = 16
+  override_special = "!@#$%^&*"
+  min_lower        = 1
+  min_upper        = 1
+  min_numeric      = 1
+  min_special      = 1
+}
+
+resource "aws_cognito_user" "test" {
+  user_pool_id = module.cognito.user_pool_id
+  username     = "test@example.com"
+  password     = random_password.test_user.result
+
+  attributes = {
+    email          = "test@example.com"
+    email_verified = "true"
+  }
+
+  message_action = "SUPPRESS"
 }
