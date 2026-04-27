@@ -9,7 +9,7 @@ dev 環境の AWS リソースを直接使う。DynamoDB Local や Cognito Local
 |---|---|
 | DynamoDB | dev 環境の本物 (`wallet-note-development`) |
 | Cognito | dev 環境の本物 (Managed Login UI 含む) |
-| Lambda Go アプリ | ローカルで `go run ./cmd/server` (LWA は経由せず普通の HTTP サーバ) |
+| Lambda Go アプリ | ローカルで `go run ./cmd/wallet-note` (LWA は経由せず普通の HTTP サーバ) |
 | Web Client | Vite dev server |
 
 ## 認証検証 (Web Server コードに分岐を入れない)

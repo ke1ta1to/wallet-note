@@ -32,7 +32,7 @@ HTTP 周りは標準 `net/http` のみ。
 
 ```
 web-server/
-├── cmd/server/main.go             DI 組み立て + ListenAndServe(":8080")
+├── cmd/wallet-note/main.go        DI 組み立て + ListenAndServe(":8080")
 ├── internal/
 │   ├── transaction/               取引機能
 │   ├── category/                  カテゴリ機能
