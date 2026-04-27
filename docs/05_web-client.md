@@ -10,7 +10,7 @@ React 19 + Vite + TanStack Router + Mantine。スマホで触ることを前提�
 | Framework | React 19 |
 | Build | Vite |
 | Routing | TanStack Router (file-based) |
-| UI | Mantine 7+ (PostCSS 設定済み) |
+| UI | Mantine 9+ (PostCSS 設定済み) |
 | Server state | TanStack Query |
 | UI state | Zustand |
 | Auth | AWS Amplify Auth v6 (`@aws-amplify/auth` のみ、CLI/UI 系は使わない) |

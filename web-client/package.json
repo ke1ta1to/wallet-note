@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "codegen": "openapi-typescript ../openapi/openapi.yaml -o ./src/api/schema.d.ts"
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.19.1",

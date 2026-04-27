@@ -1,0 +1,168 @@
+openapi: 3.0.3
+
+info:
+  title: wallet-note API
+  version: 0.1.0
+
+servers:
+  - url: /api
+    description: CloudFront -> API Gateway HTTP API -> Lambda
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Cognito Access Token.
+
+  schemas:
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+    Me:
+      type: object
+      required: [id, username]
+      properties:
+        id:
+          type: string
+          description: Cognito sub
+        username:
+          type: string
+    Organization:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Membership:
+      type: object
+      required: [org_id, role, joined_at]
+      properties:
+        org_id:
+          type: string
+        org_name:
+          type: string
+        role:
+          type: string
+          enum: [owner, member]
+        joined_at:
+          type: string
+          format: date-time
+
+paths:
+  /me:
+    get:
+      operationId: get_me
+      summary: Current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /me/orgs:
+    get:
+      operationId: get_my_orgs
+      summary: My organization memberships
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Membership"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /orgs:
+    post:
+      operationId: create_org
+      summary: Create organization (caller becomes owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /orgs/{org_id}:
+    get:
+      operationId: get_org
+      summary: Get organization (member required)
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden (not a member)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
