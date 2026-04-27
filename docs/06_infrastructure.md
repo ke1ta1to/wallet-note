@@ -97,13 +97,14 @@ CloudFront Distribution
 
 `provided.al2023` の custom runtime、arm64。AWS Lambda Web Adapter の公式 Layer (リージョン × アーキテクチャで ARN が異なる) を attach する。
 
-環境変数の例:
+環境変数:
 
 ```
 WALLET_NOTE_TABLE=wallet-note-<env>
 AWS_LWA_PORT=8080
-AWS_LAMBDA_EXEC_WRAPPER=/opt/bootstrap
 ```
+
+`provided.al2023` では Lambda が `bootstrap` を直接 exec し、LWA は Lambda Extension として動くため `AWS_LAMBDA_EXEC_WRAPPER` は不要 (これは managed runtime + zip の場合に使う変数)。
 
 IAM Role は DynamoDB CRUD と CloudWatch Logs に絞る。
 

@@ -37,3 +37,11 @@ output "web_client_distribution_domain" {
 output "web_client_url" {
   value = "https://${module.web_client.distribution_domain}"
 }
+
+output "web_server_lambda_function_name" {
+  value = module.web_server.lambda_function_name
+}
+
+output "web_server_api_endpoint" {
+  value = module.web_server.api_endpoint
+}

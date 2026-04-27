@@ -27,3 +27,14 @@ module "web_client" {
   name_prefix = local.name_prefix
   account_id  = data.aws_caller_identity.current.account_id
 }
+
+module "web_server" {
+  source = "../../modules/web-server"
+
+  name_prefix                 = local.name_prefix
+  region                      = var.region
+  dynamodb_table_name         = module.dynamodb.table_name
+  dynamodb_table_arn          = module.dynamodb.table_arn
+  cognito_user_pool_id        = module.cognito.user_pool_id
+  cognito_user_pool_client_id = module.cognito.user_pool_client_id
+}

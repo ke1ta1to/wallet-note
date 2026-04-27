@@ -5,6 +5,7 @@ dist/
 
 go.work.sum
 /web-server/build/
+/infrastructure/modules/web-server/.placeholder.zip
 
 .terraform/
 *.tfstate
