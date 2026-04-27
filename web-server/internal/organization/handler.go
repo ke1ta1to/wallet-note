@@ -24,7 +24,7 @@ func New(repo orgReader, svc *Service, mw *auth.Middleware) *Handler {
 
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /orgs", h.mw.WithAuth(h.Create))
-	mux.HandleFunc("GET /orgs/{orgId}", h.mw.WithOrgAuth(h.Get))
+	mux.HandleFunc("GET /orgs/{org_id}", h.mw.WithOrgAuth(h.Get))
 }
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {

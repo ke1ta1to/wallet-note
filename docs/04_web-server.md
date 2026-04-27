@@ -12,7 +12,7 @@ Go の Lambdalith。AWS Lambda Web Adapter (LWA) を Layer として乗せ、ア
 | Layer | AWS Lambda Web Adapter (公式 ARN を attach) |
 | ポート | 8080 (LWA から HTTP で受ける) |
 
-アプリのエントリは `net/http.ListenAndServe(":8080", mux)`。Go 1.22+ の `net/http.ServeMux` で `POST /orgs/{orgId}/transactions` のような path patterns を直接書ける。chi 等のルータも `aws-lambda-go` も依存に含めない。
+アプリのエントリは `net/http.ListenAndServe(":8080", mux)`。Go 1.22+ の `net/http.ServeMux` で `POST /orgs/{org_id}/transactions` のような path patterns を直接書ける。chi 等のルータも `aws-lambda-go` も依存に含めない。
 
 ## 採用ライブラリ
 
@@ -125,7 +125,7 @@ Repository / Service は mock せず実物を使う。Mock 手書きや `mockery
 
 ## レスポンス形状
 
-リスト系エンドポイント (`GET /me/orgs`, `GET /orgs/{orgId}/transactions` 等) は次の形に統一する:
+リスト系エンドポイント (`GET /me/orgs`, `GET /orgs/{org_id}/transactions` 等) は次の形に統一する:
 
 ```json
 {
@@ -151,31 +151,31 @@ GET    /me
 GET    /me/orgs
 
 POST   /orgs
-GET    /orgs/{orgId}
-PATCH  /orgs/{orgId}                                [owner]
-DELETE /orgs/{orgId}                                [owner]
-GET    /orgs/{orgId}/members
-DELETE /orgs/{orgId}/members/{userId}               [owner]
+GET    /orgs/{org_id}
+PATCH  /orgs/{org_id}                                [owner]
+DELETE /orgs/{org_id}                                [owner]
+GET    /orgs/{org_id}/members
+DELETE /orgs/{org_id}/members/{user_id}               [owner]
 
-POST   /orgs/{orgId}/invites                        [owner]
-GET    /orgs/{orgId}/invites                        [owner]
-DELETE /orgs/{orgId}/invites/{code}                 [owner]
+POST   /orgs/{org_id}/invites                        [owner]
+GET    /orgs/{org_id}/invites                        [owner]
+DELETE /orgs/{org_id}/invites/{code}                 [owner]
 GET    /invites/{code}                              (ログインのみ要求)
 POST   /invites/{code}/accept                       (ログインのみ要求)
 
-POST   /orgs/{orgId}/categories
-GET    /orgs/{orgId}/categories
-GET    /orgs/{orgId}/categories/{categoryId}
-PATCH  /orgs/{orgId}/categories/{categoryId}
-DELETE /orgs/{orgId}/categories/{categoryId}
+POST   /orgs/{org_id}/categories
+GET    /orgs/{org_id}/categories
+GET    /orgs/{org_id}/categories/{category_id}
+PATCH  /orgs/{org_id}/categories/{category_id}
+DELETE /orgs/{org_id}/categories/{category_id}
 
-POST   /orgs/{orgId}/transactions
-GET    /orgs/{orgId}/transactions?from=&to=&categoryId=&cursor=&limit=
-GET    /orgs/{orgId}/transactions/{txId}
-PATCH  /orgs/{orgId}/transactions/{txId}
-DELETE /orgs/{orgId}/transactions/{txId}
+POST   /orgs/{org_id}/transactions
+GET    /orgs/{org_id}/transactions?from=&to=&category_id=&cursor=&limit=
+GET    /orgs/{org_id}/transactions/{tx_id}
+PATCH  /orgs/{org_id}/transactions/{tx_id}
+DELETE /orgs/{org_id}/transactions/{tx_id}
 
-GET    /orgs/{orgId}/summary?month=2026-04
+GET    /orgs/{org_id}/summary?month=2026-04
 ```
 
 `[owner]` 印が付いたエンドポイントは owner 限定。それ以外は member 以上で叩ける。

@@ -68,11 +68,11 @@ func (m *Middleware) WithAuth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// WithOrgAuth requires {orgId} in the route pattern.
+// WithOrgAuth requires {org_id} in the route pattern.
 func (m *Middleware) WithOrgAuth(next http.HandlerFunc) http.HandlerFunc {
 	return m.WithAuth(func(w http.ResponseWriter, r *http.Request) {
 		claims := ClaimsFromContext(r.Context())
-		orgID := r.PathValue("orgId")
+		orgID := r.PathValue("org_id")
 		if orgID == "" {
 			httpx.WriteError(w, apperror.ErrInvalidInput)
 			return

@@ -28,14 +28,14 @@ REST API ではなく HTTP API を使う。コストが約1/3、レイテンシ�
 
 ## URL 構造
 
-`orgId` はパスパラメータで渡す (`/orgs/{orgId}/...`)。RESTful に表現でき、ログ・トレースでも org が一目で分かるため。ヘッダや JWT 埋め込みは採用しない。
+`org_id` はパスパラメータで渡す (`/orgs/{org_id}/...`)。RESTful に表現でき、ログ・トレースでも org が一目で分かるため。ヘッダや JWT 埋め込みは採用しない。
 
 ## 認可ミドルウェア (Lambda Go)
 
 org スコープの API はすべて以下を通る。
 
-1. `x-amzn-request-context` から `authorizer.jwt.claims.sub` を取り出して `userId` を得る
-2. URL のパスパラメータから `orgId` を得る
+1. `x-amzn-request-context` から `authorizer.jwt.claims.sub` を取り出して `user_id` を得る
+2. URL のパスパラメータから `org_id` を得る
 3. `GetItem(USER#<userId>, SK=ORG#<orgId>)` で Membership を引く
 4. 取れなければ 403、取れたら role を見て要求権限と照合する
 
