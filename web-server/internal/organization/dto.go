@@ -11,14 +11,14 @@ type CreateOrgRequest struct {
 }
 
 type OrgResponse struct {
-	OrgID     string `json:"org_id"`
+	ID        string `json:"id"`
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 }
 
 func ToOrgResponse(o *Organization) OrgResponse {
 	return OrgResponse{
-		OrgID:     o.OrgID,
+		ID:        o.ID,
 		Name:      o.Name,
 		CreatedAt: o.CreatedAt.UTC().Format(time.RFC3339),
 	}

@@ -1,19 +1,24 @@
 package organization
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/ke1ta1to/wallet-note/internal/auth"
 	"github.com/ke1ta1to/wallet-note/internal/platform/httpx"
 )
 
+type orgReader interface {
+	Get(ctx context.Context, orgID string) (*Organization, error)
+}
+
 type Handler struct {
-	repo OrgRepository
+	repo orgReader
 	svc  *Service
 	mw   *auth.Middleware
 }
 
-func New(repo OrgRepository, svc *Service, mw *auth.Middleware) *Handler {
+func New(repo orgReader, svc *Service, mw *auth.Middleware) *Handler {
 	return &Handler{repo: repo, svc: svc, mw: mw}
 }
 
@@ -39,7 +44,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	mem := auth.MembershipFromContext(r.Context())
-	org, err := h.repo.GetOrg(r.Context(), mem.OrgID)
+	org, err := h.repo.Get(r.Context(), mem.OrgID)
 	if err != nil {
 		httpx.WriteError(w, err)
 		return

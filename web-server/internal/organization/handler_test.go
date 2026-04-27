@@ -37,15 +37,15 @@ func TestPOSTOrgs_Success(t *testing.T) {
 		t.Fatalf("decode: %v", err)
 	}
 
-	if resp.OrgID == "" {
-		t.Error("org_id empty")
+	if resp.ID == "" {
+		t.Error("id empty")
 	}
 	if resp.CreatedAt == "" {
 		t.Error("created_at empty")
 	}
 	want := organization.OrgResponse{Name: "My Wallet"}
 	if diff := cmp.Diff(want, resp,
-		cmpopts.IgnoreFields(organization.OrgResponse{}, "OrgID", "CreatedAt"),
+		cmpopts.IgnoreFields(organization.OrgResponse{}, "ID", "CreatedAt"),
 	); diff != "" {
 		t.Errorf("response mismatch (-want +got):\n%s", diff)
 	}
@@ -55,7 +55,7 @@ func TestPOSTOrgs_Success(t *testing.T) {
 	orgItem, err := db.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String(testutils.TableName),
 		Key: map[string]ddbtypes.AttributeValue{
-			"PK": &ddbtypes.AttributeValueMemberS{Value: "ORG#" + resp.OrgID},
+			"PK": &ddbtypes.AttributeValueMemberS{Value: "ORG#" + resp.ID},
 			"SK": &ddbtypes.AttributeValueMemberS{Value: "META"},
 		},
 	})
@@ -66,7 +66,7 @@ func TestPOSTOrgs_Success(t *testing.T) {
 		TableName: aws.String(testutils.TableName),
 		Key: map[string]ddbtypes.AttributeValue{
 			"PK": &ddbtypes.AttributeValueMemberS{Value: "USER#user-1"},
-			"SK": &ddbtypes.AttributeValueMemberS{Value: "ORG#" + resp.OrgID},
+			"SK": &ddbtypes.AttributeValueMemberS{Value: "ORG#" + resp.ID},
 		},
 	})
 	if err != nil || memItem.Item == nil {
@@ -121,7 +121,7 @@ func TestGETOrg_AsMember(t *testing.T) {
 	}
 
 	// GET as the same user.
-	req := testutils.MakeReq(t, "GET", "/orgs/"+created.OrgID, nil,
+	req := testutils.MakeReq(t, "GET", "/orgs/"+created.ID, nil,
 		map[string]any{"sub": "user-1"},
 	)
 	rec := httptest.NewRecorder()
@@ -153,7 +153,7 @@ func TestGETOrg_NotMember(t *testing.T) {
 	json.NewDecoder(createRec.Body).Decode(&created)
 
 	// user-2 tries to GET.
-	req := testutils.MakeReq(t, "GET", "/orgs/"+created.OrgID, nil,
+	req := testutils.MakeReq(t, "GET", "/orgs/"+created.ID, nil,
 		map[string]any{"sub": "user-2"},
 	)
 	rec := httptest.NewRecorder()

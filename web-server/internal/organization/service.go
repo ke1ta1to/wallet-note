@@ -28,14 +28,14 @@ func NewService(db *dynamodb.Client, tableName string) *Service {
 func (s *Service) CreateOrgWithMembership(ctx context.Context, ownerUserID, name string) (*Organization, error) {
 	now := time.Now().UTC()
 	org := &Organization{
-		OrgID:     idgen.NewID(),
+		ID:        idgen.NewID(),
 		Name:      name,
 		CreatedAt: now,
 		CreatedBy: ownerUserID,
 	}
 	mem := &auth.Membership{
 		UserID:   ownerUserID,
-		OrgID:    org.OrgID,
+		OrgID:    org.ID,
 		Role:     auth.RoleOwner,
 		JoinedAt: now,
 	}

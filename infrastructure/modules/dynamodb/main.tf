@@ -42,7 +42,7 @@ resource "aws_dynamodb_table" "this" {
   }
 
   ttl {
-    attribute_name = "expiresAt"
+    attribute_name = "expires_at"
     enabled        = true
   }
 

@@ -14,8 +14,8 @@ import (
 )
 
 func NewMux(db *dynamodb.Client, tableName string) *http.ServeMux {
-	orgRepo := organization.NewDynamoOrgRepository(db, tableName)
-	memRepo := organization.NewDynamoMembershipRepository(db, tableName)
+	orgRepo := organization.NewOrgRepo(db, tableName)
+	memRepo := organization.NewMembershipRepo(db, tableName)
 	orgSvc := organization.NewService(db, tableName)
 	mw := auth.NewMiddleware(memRepo)
 

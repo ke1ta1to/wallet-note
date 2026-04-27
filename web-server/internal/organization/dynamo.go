@@ -28,18 +28,18 @@ type orgItem struct {
 	PK        string `dynamodbav:"PK"`
 	SK        string `dynamodbav:"SK"`
 	Type      string `dynamodbav:"type"`
-	OrgID     string `dynamodbav:"orgId"`
+	ID        string `dynamodbav:"org_id"`
 	Name      string `dynamodbav:"name"`
-	CreatedAt string `dynamodbav:"createdAt"`
-	CreatedBy string `dynamodbav:"createdBy"`
+	CreatedAt string `dynamodbav:"created_at"`
+	CreatedBy string `dynamodbav:"created_by"`
 }
 
 func orgItemFromModel(o *Organization) orgItem {
 	return orgItem{
-		PK:        orgPK(o.OrgID),
+		PK:        orgPK(o.ID),
 		SK:        skMeta,
 		Type:      typeOrganization,
-		OrgID:     o.OrgID,
+		ID:        o.ID,
 		Name:      o.Name,
 		CreatedAt: o.CreatedAt.UTC().Format(time.RFC3339),
 		CreatedBy: o.CreatedBy,
@@ -49,10 +49,10 @@ func orgItemFromModel(o *Organization) orgItem {
 func (i orgItem) toModel() (*Organization, error) {
 	t, err := time.Parse(time.RFC3339, i.CreatedAt)
 	if err != nil {
-		return nil, fmt.Errorf("parse createdAt: %w", err)
+		return nil, fmt.Errorf("parse created_at: %w", err)
 	}
 	return &Organization{
-		OrgID:     i.OrgID,
+		ID:        i.ID,
 		Name:      i.Name,
 		CreatedAt: t,
 		CreatedBy: i.CreatedBy,
@@ -65,10 +65,10 @@ type membershipItem struct {
 	GSI1PK   string `dynamodbav:"GSI1PK"`
 	GSI1SK   string `dynamodbav:"GSI1SK"`
 	Type     string `dynamodbav:"type"`
-	UserID   string `dynamodbav:"userId"`
-	OrgID    string `dynamodbav:"orgId"`
+	UserID   string `dynamodbav:"user_id"`
+	OrgID    string `dynamodbav:"org_id"`
 	Role     string `dynamodbav:"role"`
-	JoinedAt string `dynamodbav:"joinedAt"`
+	JoinedAt string `dynamodbav:"joined_at"`
 }
 
 func membershipItemFromModel(m *auth.Membership) membershipItem {
@@ -88,7 +88,7 @@ func membershipItemFromModel(m *auth.Membership) membershipItem {
 func (i membershipItem) toModel() (*auth.Membership, error) {
 	t, err := time.Parse(time.RFC3339, i.JoinedAt)
 	if err != nil {
-		return nil, fmt.Errorf("parse joinedAt: %w", err)
+		return nil, fmt.Errorf("parse joined_at: %w", err)
 	}
 	return &auth.Membership{
 		UserID:   i.UserID,
@@ -98,16 +98,16 @@ func (i membershipItem) toModel() (*auth.Membership, error) {
 	}, nil
 }
 
-type DynamoOrgRepository struct {
+type OrgRepo struct {
 	db        *dynamodb.Client
 	tableName string
 }
 
-func NewDynamoOrgRepository(db *dynamodb.Client, tableName string) *DynamoOrgRepository {
-	return &DynamoOrgRepository{db: db, tableName: tableName}
+func NewOrgRepo(db *dynamodb.Client, tableName string) *OrgRepo {
+	return &OrgRepo{db: db, tableName: tableName}
 }
 
-func (r *DynamoOrgRepository) GetOrg(ctx context.Context, orgID string) (*Organization, error) {
+func (r *OrgRepo) Get(ctx context.Context, orgID string) (*Organization, error) {
 	out, err := r.db.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &r.tableName,
 		Key: map[string]ddbtypes.AttributeValue{
@@ -128,8 +128,8 @@ func (r *DynamoOrgRepository) GetOrg(ctx context.Context, orgID string) (*Organi
 	return item.toModel()
 }
 
-// BatchGetOrgs returns orgs in input order; missing items are silently skipped.
-func (r *DynamoOrgRepository) BatchGetOrgs(ctx context.Context, orgIDs []string) ([]*Organization, error) {
+// BatchGet returns orgs in input order; missing items are silently skipped.
+func (r *OrgRepo) BatchGet(ctx context.Context, orgIDs []string) ([]*Organization, error) {
 	if len(orgIDs) == 0 {
 		return nil, nil
 	}
@@ -159,7 +159,7 @@ func (r *DynamoOrgRepository) BatchGetOrgs(ctx context.Context, orgIDs []string)
 		if err != nil {
 			return nil, err
 		}
-		byID[o.OrgID] = o
+		byID[o.ID] = o
 	}
 	result := make([]*Organization, 0, len(orgIDs))
 	for _, id := range orgIDs {
@@ -170,16 +170,16 @@ func (r *DynamoOrgRepository) BatchGetOrgs(ctx context.Context, orgIDs []string)
 	return result, nil
 }
 
-type DynamoMembershipRepository struct {
+type MembershipRepo struct {
 	db        *dynamodb.Client
 	tableName string
 }
 
-func NewDynamoMembershipRepository(db *dynamodb.Client, tableName string) *DynamoMembershipRepository {
-	return &DynamoMembershipRepository{db: db, tableName: tableName}
+func NewMembershipRepo(db *dynamodb.Client, tableName string) *MembershipRepo {
+	return &MembershipRepo{db: db, tableName: tableName}
 }
 
-func (r *DynamoMembershipRepository) GetMembership(ctx context.Context, userID, orgID string) (*auth.Membership, error) {
+func (r *MembershipRepo) Get(ctx context.Context, userID, orgID string) (*auth.Membership, error) {
 	out, err := r.db.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &r.tableName,
 		Key: map[string]ddbtypes.AttributeValue{
@@ -200,7 +200,7 @@ func (r *DynamoMembershipRepository) GetMembership(ctx context.Context, userID, 
 	return item.toModel()
 }
 
-func (r *DynamoMembershipRepository) ListByUser(ctx context.Context, userID string) ([]*auth.Membership, error) {
+func (r *MembershipRepo) ListByUser(ctx context.Context, userID string) ([]*auth.Membership, error) {
 	out, err := r.db.Query(ctx, &dynamodb.QueryInput{
 		TableName:              &r.tableName,
 		KeyConditionExpression: aws.String("PK = :pk AND begins_with(SK, :sk)"),

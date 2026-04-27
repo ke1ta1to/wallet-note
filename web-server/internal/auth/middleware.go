@@ -24,7 +24,7 @@ type Membership struct {
 
 // MembershipReader stays in auth so the package does not import organization.
 type MembershipReader interface {
-	GetMembership(ctx context.Context, userID, orgID string) (*Membership, error)
+	Get(ctx context.Context, userID, orgID string) (*Membership, error)
 }
 
 type Middleware struct {
@@ -77,7 +77,7 @@ func (m *Middleware) WithOrgAuth(next http.HandlerFunc) http.HandlerFunc {
 			httpx.WriteError(w, apperror.ErrInvalidInput)
 			return
 		}
-		membership, err := m.reader.GetMembership(r.Context(), claims.Sub, orgID)
+		membership, err := m.reader.Get(r.Context(), claims.Sub, orgID)
 		if errors.Is(err, apperror.ErrNotFound) {
 			// Map "not a member" to 403; 404 would leak org existence.
 			httpx.WriteError(w, apperror.ErrForbidden)

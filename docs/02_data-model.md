@@ -10,7 +10,7 @@ Single Table Design を採用し、マルチテナント (Organization) でテ�
 | 名前 | `wallet-note-<env>` (例: `wallet-note-development`) |
 | 課金モード | PAY_PER_REQUEST |
 | PITR | 有効 |
-| TTL 属性 | `expiresAt` (Unix epoch 秒) |
+| TTL 属性 | `expires_at` (Unix epoch 秒) |
 | Stream | 必要時のみ有効化 (org 削除カスケード用) |
 
 ## キー設計
@@ -28,7 +28,7 @@ ORG#<orgId>          TX#<yyyy-mm-dd>#<txId>      ORG#<orgId>#CAT#<catId> TX#<yyy
 ORG#<orgId>          INVITE#<code>               INVITE#<code>           META
 ```
 
-ユーザは Cognito 側で識別され、本テーブルに User entity は持たない。`userId` (= Cognito `sub`) は Membership の `PK=USER#<userId>` で間接的に存在する。displayName / email など表示用の属性は Cognito の token から取る。
+ユーザは Cognito 側で識別され、本テーブルに User entity は持たない。`user_id` (= Cognito `sub`) は Membership の `PK=USER#<userId>` で間接的に存在する。displayName / email など表示用の属性は Cognito の token から取る。
 
 ## アクセスパターン
 
@@ -68,10 +68,10 @@ Membership:
   "GSI1PK": "ORG#<o>",
   "GSI1SK": "USER#<u>",
   "type": "Membership",
-  "userId": "<u>",
-  "orgId": "<o>",
+  "user_id": "<u>",
+  "org_id": "<o>",
   "role": "owner",
-  "joinedAt": "..."
+  "joined_at": "..."
 }
 ```
 
@@ -84,10 +84,10 @@ Organization:
   "PK": "ORG#<o>",
   "SK": "META",
   "type": "Organization",
-  "orgId": "<o>",
+  "org_id": "<o>",
   "name": "...",
-  "createdAt": "...",
-  "createdBy": "<u>"
+  "created_at": "...",
+  "created_by": "<u>"
 }
 ```
 
@@ -98,12 +98,12 @@ Category:
   "PK": "ORG#<o>",
   "SK": "CATEGORY#<c>",
   "type": "Category",
-  "orgId": "<o>",
-  "categoryId": "<c>",
+  "org_id": "<o>",
+  "category_id": "<c>",
   "name": "食費",
   "kind": "expense",
   "color": "#ff8800",
-  "createdAt": "..."
+  "created_at": "..."
 }
 ```
 
@@ -118,14 +118,14 @@ Transaction:
   "GSI1PK": "ORG#<o>#CAT#<c>",
   "GSI1SK": "TX#<yyyy-mm-dd>",
   "type": "Transaction",
-  "orgId": "<o>",
-  "txId": "<tx>",
-  "categoryId": "<c>",
+  "org_id": "<o>",
+  "tx_id": "<tx>",
+  "category_id": "<c>",
   "amount": 1500,
   "date": "2026-04-25",
   "memo": "...",
-  "createdAt": "...",
-  "createdBy": "<u>"
+  "created_at": "...",
+  "created_by": "<u>"
 }
 ```
 
@@ -143,19 +143,19 @@ Invite:
   "GSI1SK": "META",
   "type": "Invite",
   "code": "<code>",
-  "orgId": "<o>",
+  "org_id": "<o>",
   "role": "member",
-  "invitedBy": "<u>",
-  "expiresAt": 1714492800,
-  "createdAt": "..."
+  "invited_by": "<u>",
+  "expires_at": 1714492800,
+  "created_at": "..."
 }
 ```
 
-`expiresAt` は DynamoDB TTL 属性だが、TTL の削除は最大 48 時間遅れる。招待検証 (`GET /invites/{code}`、`POST /invites/{code}/accept`) は必ずアプリ側で `expiresAt > now` を確認する。TTL はストレージ掃除のみと見なす。
+`expires_at` は DynamoDB TTL 属性だが、TTL の削除は最大 48 時間遅れる。招待検証 (`GET /invites/{code}`、`POST /invites/{code}/accept`) は必ずアプリ側で `expires_at > now` を確認する。TTL はストレージ掃除のみと見なす。
 
 ## ID 採番
 
-`userId` は Cognito の `sub` をそのまま使う。`orgId` / `categoryId` / `txId` は UUIDv7 (RFC 9562、時系列 sortable)。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
+`user_id` は Cognito の `sub` をそのまま使う。`org_id` / `category_id` / `tx_id` は UUIDv7 (RFC 9562、時系列 sortable)。招待 `code` は6文字英数字 (大文字、紛らわしい字 0/O/1/I/L を除外、約30文字種)、生成時に `ConditionExpression` で重複チェックしてリトライする。
 
 ## マルチテナント分離
 
@@ -173,7 +173,7 @@ org スコープの API はすべて AP2 (`GetItem(USER#<u>, ORG#<o>)`) を最�
 
 ### 所属 org 一覧 (`GET /me/orgs`)
 
-AP1 で Membership 一覧を引いたあと、得られた orgId 群を `BatchGetItem` で `ORG#<o>/META` から取得し、orgName と join して返す。Membership に orgName を冗長保存しないため、Org 名変更時の cascade 更新は不要。
+AP1 で Membership 一覧を引いたあと、得られた `org_id` 群を `BatchGetItem` で `ORG#<o>/META` から取得し、`name` と join して返す。Membership に `name` を冗長保存しないため、Org 名変更時の cascade 更新は不要。
 
 ## 集計
 

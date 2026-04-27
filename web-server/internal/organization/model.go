@@ -3,7 +3,7 @@ package organization
 import "time"
 
 type Organization struct {
-	OrgID     string
+	ID        string
 	Name      string
 	CreatedAt time.Time
 	CreatedBy string

@@ -3,7 +3,7 @@ package user
 import "github.com/ke1ta1to/wallet-note/internal/organization"
 
 type MeResponse struct {
-	UserID   string  `json:"user_id"`
+	ID       string  `json:"id"`
 	Username *string `json:"username,omitempty"`
 }
 

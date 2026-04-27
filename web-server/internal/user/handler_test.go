@@ -32,7 +32,7 @@ func TestGETMe_WithUsername(t *testing.T) {
 	var got map[string]any
 	json.NewDecoder(rec.Body).Decode(&got)
 	want := map[string]any{
-		"user_id":  "user-1",
+		"id":       "user-1",
 		"username": "alice",
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
@@ -54,7 +54,7 @@ func TestGETMe_WithoutUsername(t *testing.T) {
 	}
 	var got map[string]any
 	json.NewDecoder(rec.Body).Decode(&got)
-	want := map[string]any{"user_id": "user-1"} // username key omitted
+	want := map[string]any{"id": "user-1"} // username key omitted
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("response mismatch (-want +got):\n%s", diff)
 	}

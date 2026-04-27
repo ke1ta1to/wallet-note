@@ -58,10 +58,9 @@ web-server/
 各機能パッケージは概ね次のファイル構成を取る。
 
 ```
-handler.go       HTTP ハンドラ
+handler.go       HTTP ハンドラ + 必要な narrow interface の宣言
 handler_test.go  request test (実 DDB に当てて HTTP I/O + DDB 状態を検証)
-repository.go    Repository インターフェース
-dynamo.go        DynamoDB 実装
+dynamo.go        DynamoDB 実装 (concrete struct のみ)
 model.go         ドメインモデル
 dto.go           API DTO + 変換 (ドメインモデルとは分離)
 service.go       必要時のみ (複数リポジトリにまたがる処理用)
@@ -69,9 +68,11 @@ service.go       必要時のみ (複数リポジトリにまたがる処理用)
 
 ## 依存ルール
 
-`platform` は誰にも依存しない (基盤層)。`auth` は機能パッケージに直接依存せず、必要なら自分の中で interface (例: `MembershipReader`) を宣言し、main で organization の実装を渡してもらう (Go の implicit interface)。
+`platform` は誰にも依存しない (基盤層)。
 
-`organization` は他機能から参照される側で、`OrgRepository` と `MembershipRepository` を提供する。`user` は所属 org 一覧の取得で `organization` に依存する。
+Repository の interface は consumer 側で declaration する。`dynamo.go` は concrete struct (`*OrgRepo` 等) だけを置き、各 consumer (handler / service / 他パッケージ) が必要メソッドだけ unexported interface として宣言し、Go の structural typing で受け取る。`auth` も `MembershipReader` を auth 内で宣言してこの pattern に乗っている。
+
+`organization` は `*OrgRepo` / `*MembershipRepo` を export する。`user` は所属 org 一覧の取得で organization に依存し、`membershipReader` / `orgBatchReader` を user パッケージ内で宣言して取り込む。
 
 ## 設計上の決定
 
@@ -84,12 +85,14 @@ DTO はドメインモデルと分離する。内部表現と API のレスポ�
 機能パッケージ (`organization`, `transaction`, …) は次の責務で構成する:
 
 - handler は HTTP I/O のみ。リクエスト解析 → repository / service 呼び出し → レスポンス書き込み
-- repository は1エンティティの永続化契約。`feature/repository.go` で interface を宣言、`dynamo.go` などで実装
+- repository は1エンティティの永続化を担う。`dynamo.go` に concrete struct を置く。interface 宣言は consumer 側 (handler.go / service.go / 他パッケージ) に置き、実際に呼ぶメソッドだけを並べる
 - service は複数 repository をまたぐ処理 (`TransactWriteItems`、cross-entity 整合性)。最初から作らず、必要が出たタイミングで追加する
 
-handler は repository (interface) を直接持ち、CRUD はそれだけで完結する。複数 repository を跨ぐ処理 (例: `POST /orgs` の Org + Membership atomic 作成) が出たときに service.go を導入する。
+例: `organization.Handler.Get` は repo の `Get` だけ呼ぶので、`organization/handler.go` 内で `orgReader interface { Get(...) (*Organization, error) }` を宣言する。`user.Handler.MyOrgs` は repo の `BatchGet` と `ListByUser` を user パッケージ内で別 narrow interface として宣言する。
 
-repository は interface (storage 差し替えの余地、テストでの mock 注入のため)、service は struct (1 impl 想定、抽象化の必要が出たら interface に格上げ)。
+handler は repository (narrow interface) を直接持ち、CRUD はそれだけで完結する。複数 repository を跨ぐ処理 (例: `POST /orgs` の Org + Membership atomic 作成) が出たときに service.go を導入する。
+
+interface は storage 差し替えやテスト mock のためではなく、consumer の最小契約を表現するためだけに存在する。テストは request test 主体で実 DDB に当てるので mock 注入はしない。service は struct (1 impl 想定、抽象化の必要が出たら interface に格上げ)。
 
 ## テスト戦略
 
