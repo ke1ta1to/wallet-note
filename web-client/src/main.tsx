@@ -30,8 +30,8 @@ Amplify.configure({
 // Must come after Amplify.configure since the middleware calls fetchAuthSession.
 import "./api/middleware";
 
-const router = createRouter({ routeTree });
 const queryClient = new QueryClient();
+const router = createRouter({ routeTree, context: { queryClient } });
 
 declare module "@tanstack/react-router" {
   interface Register {
