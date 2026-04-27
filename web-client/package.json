@@ -6,12 +6,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.19.1",
     "@mantine/core": "^9.1.0",
     "@mantine/hooks": "^9.1.0",
+    "@tanstack/react-query": "^5.100.5",
     "@tanstack/react-router": "^1.168.24",
     "@tanstack/react-router-devtools": "^1.166.13",
+    "openapi-fetch": "^0.17.0",
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.167.26",
@@ -20,6 +24,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "globals": "^17.5.0",
+    "openapi-typescript": "^7.13.0",
     "postcss": "^8.5.10",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",

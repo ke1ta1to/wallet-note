@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core";
+import { Title } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -6,9 +6,5 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  return (
-    <div>
-      <Button>Click me</Button>
-    </div>
-  );
+  return <Title order={1}>wallet-note</Title>;
 }
