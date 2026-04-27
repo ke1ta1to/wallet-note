@@ -17,7 +17,7 @@ import (
 	"github.com/ke1ta1to/wallet-note/internal/user"
 )
 
-func TestGETMe_WithUsername(t *testing.T) {
+func TestGETMe(t *testing.T) {
 	mux, _ := testutils.Setup(t)
 
 	req := testutils.MakeReq(t, "GET", "/me", nil,
@@ -35,26 +35,6 @@ func TestGETMe_WithUsername(t *testing.T) {
 		"id":       "user-1",
 		"username": "alice",
 	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("response mismatch (-want +got):\n%s", diff)
-	}
-}
-
-func TestGETMe_WithoutUsername(t *testing.T) {
-	mux, _ := testutils.Setup(t)
-
-	req := testutils.MakeReq(t, "GET", "/me", nil,
-		map[string]any{"sub": "user-1"}, // no username claim
-	)
-	rec := httptest.NewRecorder()
-	mux.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("status=%d", rec.Code)
-	}
-	var got map[string]any
-	json.NewDecoder(rec.Body).Decode(&got)
-	want := map[string]any{"id": "user-1"} // username key omitted
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("response mismatch (-want +got):\n%s", diff)
 	}

@@ -34,13 +34,9 @@ func (h *Handler) Register(mux *http.ServeMux) {
 
 func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
 	claims := auth.ClaimsFromContext(r.Context())
-	var username *string
-	if claims.Username != "" {
-		username = &claims.Username
-	}
 	httpx.WriteJSON(w, http.StatusOK, MeResponse{
 		ID:       claims.Sub,
-		Username: username,
+		Username: claims.Username,
 	})
 }
 
