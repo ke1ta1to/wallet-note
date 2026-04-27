@@ -5,7 +5,7 @@ import (
 
 	"github.com/ke1ta1to/wallet-note/internal/auth"
 	"github.com/ke1ta1to/wallet-note/internal/organization"
-	"github.com/ke1ta1to/wallet-note/internal/shared/httpx"
+	"github.com/ke1ta1to/wallet-note/internal/platform/httpx"
 )
 
 type Handler struct {

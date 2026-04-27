@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ke1ta1to/wallet-note/internal/shared/apperror"
-	"github.com/ke1ta1to/wallet-note/internal/shared/httpx"
+	"github.com/ke1ta1to/wallet-note/internal/platform/apperror"
+	"github.com/ke1ta1to/wallet-note/internal/platform/httpx"
 )
 
 const (

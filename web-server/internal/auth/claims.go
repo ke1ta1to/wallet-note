@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ke1ta1to/wallet-note/internal/shared/apperror"
+	"github.com/ke1ta1to/wallet-note/internal/platform/apperror"
 )
 
 type Claims struct {

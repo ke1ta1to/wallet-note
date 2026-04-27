@@ -43,7 +43,7 @@ web-server/
 │   ├── auth/                      JWT claims 抽出、WithOrgAuth ミドルウェア
 │   │                              MembershipReader interface を内部宣言する
 │   ├── testutils/                 request test 用 helper (DDB Local, Setup)
-│   └── shared/                    横断基盤 (誰にも依存しない)
+│   └── platform/                  横断基盤 (誰にも依存しない)
 │       ├── apperror/              ErrNotFound, ErrForbidden 等
 │       ├── httpx/                 JSON ヘルパ、エラー → HTTP 変換
 │       ├── idgen/                 UUIDv7 と招待コードの生成
@@ -69,7 +69,7 @@ service.go       必要時のみ (複数リポジトリにまたがる処理用)
 
 ## 依存ルール
 
-`shared` は誰にも依存しない (基盤層)。`auth` は機能パッケージに直接依存せず、必要なら自分の中で interface (例: `MembershipReader`) を宣言し、main で organization の実装を渡してもらう (Go の implicit interface)。
+`platform` は誰にも依存しない (基盤層)。`auth` は機能パッケージに直接依存せず、必要なら自分の中で interface (例: `MembershipReader`) を宣言し、main で organization の実装を渡してもらう (Go の implicit interface)。
 
 `organization` は他機能から参照される側で、`OrgRepository` と `MembershipRepository` を提供する。`user` は所属 org 一覧の取得で `organization` に依存する。
 

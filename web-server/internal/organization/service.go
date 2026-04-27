@@ -11,7 +11,7 @@ import (
 	ddbtypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
 	"github.com/ke1ta1to/wallet-note/internal/auth"
-	"github.com/ke1ta1to/wallet-note/internal/shared/idgen"
+	"github.com/ke1ta1to/wallet-note/internal/platform/idgen"
 )
 
 type Service struct {

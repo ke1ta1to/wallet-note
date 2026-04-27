@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/ke1ta1to/wallet-note/internal/shared/apperror"
+	"github.com/ke1ta1to/wallet-note/internal/platform/apperror"
 )
 
 var validate = validator.New()

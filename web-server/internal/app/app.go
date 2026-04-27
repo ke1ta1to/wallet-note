@@ -9,7 +9,7 @@ import (
 
 	"github.com/ke1ta1to/wallet-note/internal/auth"
 	"github.com/ke1ta1to/wallet-note/internal/organization"
-	"github.com/ke1ta1to/wallet-note/internal/shared/router"
+	"github.com/ke1ta1to/wallet-note/internal/platform/router"
 	"github.com/ke1ta1to/wallet-note/internal/user"
 )
 

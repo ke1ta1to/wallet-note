@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/ke1ta1to/wallet-note/internal/app"
-	"github.com/ke1ta1to/wallet-note/internal/shared/config"
-	"github.com/ke1ta1to/wallet-note/internal/shared/ddb"
+	"github.com/ke1ta1to/wallet-note/internal/platform/config"
+	"github.com/ke1ta1to/wallet-note/internal/platform/ddb"
 )
 
 func main() {
