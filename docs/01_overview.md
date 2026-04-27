@@ -8,9 +8,8 @@
 | 領域 | 採用 |
 |---|---|
 | Web Client | React 19 + Vite + TypeScript + TanStack Router + Mantine |
-| Web Server | Go (Lambdalith) + AWS Lambda Web Adapter (LWA, arm64) |
+| Web Server | Go (Lambdalith) + AWS Lambda Web Adapter (LWA, arm64) + API Gateway HTTP API + JWT Authorizer |
 | 認証 | Amazon Cognito (Managed Login UI) |
-| API | API Gateway HTTP API + JWT Authorizer |
 | データ | DynamoDB (Single Table, on-demand, PITR 有効) |
 | 配信 | S3 + CloudFront + OAC |
 | IaC | Terraform (S3 native lock) |

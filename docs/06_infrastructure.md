@@ -29,7 +29,7 @@ infrastructure/
 ├── modules/
 │   ├── cognito/     User Pool + Client + Managed Login UI Domain + Branding
 │   ├── dynamodb/    DynamoDB Table (PK/SK + GSI1, TTL, PITR, on-demand)
-│   ├── api/         Lambda (LWA Layer, arm64) + API GW HTTP API + JWT Authorizer + IAM Role
+│   ├── web-server/  Lambda (LWA Layer, arm64) + API GW HTTP API + JWT Authorizer + IAM Role
 │   └── web-client/  S3 (no public, OAC) + CloudFront (S3 + API GW origins)
 └── environments/
     ├── development/

@@ -47,13 +47,13 @@ github-actions-wallet-note-{component}-{env}
 例:
   github-actions-wallet-note-terraform-development
   github-actions-wallet-note-terraform-production
-  github-actions-wallet-note-api-development
-  github-actions-wallet-note-api-production
-  github-actions-wallet-note-web-development
-  github-actions-wallet-note-web-production
+  github-actions-wallet-note-web-server-development
+  github-actions-wallet-note-web-server-production
+  github-actions-wallet-note-web-client-development
+  github-actions-wallet-note-web-client-production
 ```
 
-`component` は `terraform` / `api` / `web` の3種。
+`component` は `terraform` / `web-server` / `web-client` の3種。
 
 ## GitHub Environment 設定
 
@@ -79,4 +79,4 @@ PR でのみ実行する。`pnpm run generate:api` を走らせて `web-client/s
 
 ## 値の伝達
 
-`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-<env>-api`、`wallet-note-<env>-web-client-<account_id>`)。
+`CLOUDFRONT_DISTRIBUTION_ID` は GitHub Environment の Variables に手動で書く。Lambda 関数名と S3 バケット名は規則ベースで決まる (`wallet-note-<env>-web-server`、`wallet-note-<env>-web-client-<account_id>`)。
