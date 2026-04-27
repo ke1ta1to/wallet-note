@@ -56,7 +56,7 @@ infrastructure/
 
 独自ドメインは使わず、CloudFront と Cognito の発行ドメインで運用する。これにより ACM、Route 53、us-east-1 provider alias が一切不要になる。
 
-Cognito の Domain Prefix は Terraform で確保する (グローバルユニーク)。Cognito の Callback URL は CloudFront ドメインが確定してから設定するため、初回は2段階 apply (CloudFront 作成後に tfvars を更新) になる。
+Cognito の Domain Prefix は Terraform で確保する (グローバルユニーク)。Cognito の Callback URL は `module.web_client.distribution_domain` を参照して組み立てるため、tfvars 更新や2段階 apply は不要 (環境内で web-client → cognito の依存が解決される)。
 
 ## リージョン
 
@@ -86,10 +86,10 @@ CloudFront Distribution
 
 ## Cognito Callback URL
 
-`aws_cognito_user_pool_client.callback_urls` には環境ごとの本番ドメインに加え、development には localhost も入れる。
+`aws_cognito_user_pool_client.callback_urls` は environment 側 (`environments/<env>/main.tf`) で組み立てて module に渡す。CloudFront ドメインは `module.web_client.distribution_domain` を参照する。development では追加で localhost も入れる。
 
 ```
-- https://<cloudfront-domain>/auth/callback   各環境の本物
+- https://<cloudfront-domain>/auth/callback   各環境の本物 (module 参照)
 - http://localhost:5173/auth/callback         development のみ追加
 ```
 
