@@ -60,6 +60,23 @@ components:
         joined_at:
           type: string
           format: date-time
+    Category:
+      type: object
+      required: [id, name, kind, color, created_at]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+          enum: [income, expense]
+        color:
+          type: string
+          description: CSS hex color (e.g. "#ff8800").
+        created_at:
+          type: string
+          format: date-time
 
 paths:
   /me:
@@ -154,6 +171,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Organization"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden (not a member)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /orgs/{org_id}/categories:
+    get:
+      operationId: list_categories
+      summary: List categories of the organization (member required)
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden (not a member)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: create_category
+      summary: Create category (member required)
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, kind, color]
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                kind:
+                  type: string
+                  enum: [income, expense]
+                color:
+                  type: string
+                  description: CSS hex color (e.g. "#ff8800").
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized
           content:
