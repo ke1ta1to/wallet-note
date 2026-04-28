@@ -72,6 +72,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org_id}/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List transactions in the given month (member required) */
+        get: operations["list_transactions"];
+        put?: never;
+        /** Create transaction (member required) */
+        post: operations["create_transaction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org_id}/categories": {
         parameters: {
             query?: never;
@@ -123,6 +141,23 @@ export interface components {
             kind: "income" | "expense";
             /** @description CSS hex color (e.g. "#ff8800"). */
             color: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        Transaction: {
+            id: string;
+            category_id: string;
+            /**
+             * Format: int64
+             * @description Amount in JPY (positive integer; sign is derived from the linked category's kind).
+             */
+            amount: number;
+            /**
+             * Format: date
+             * @description Transaction date in YYYY-MM-DD.
+             */
+            date: string;
+            memo: string;
             /** Format: date-time */
             created_at: string;
         };
@@ -257,6 +292,125 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Organization"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden (not a member) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    list_transactions: {
+        parameters: {
+            query: {
+                /** @description Target month in YYYY-MM. */
+                month: string;
+                /** @description Optional category filter (uses GSI1). */
+                category_id?: string;
+                /** @description Opaque pagination cursor returned by a previous response. */
+                cursor?: string;
+            };
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: components["schemas"]["Transaction"][];
+                        nextCursor?: string;
+                    };
+                };
+            };
+            /** @description Invalid input (missing/invalid month or cursor) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Forbidden (not a member) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    create_transaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                org_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    category_id: string;
+                    /** Format: int64 */
+                    amount: number;
+                    /** Format: date */
+                    date: string;
+                    memo?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Transaction"];
+                };
+            };
+            /** @description Invalid input */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
             /** @description Unauthorized */

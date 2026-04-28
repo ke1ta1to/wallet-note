@@ -77,6 +77,27 @@ components:
         created_at:
           type: string
           format: date-time
+    Transaction:
+      type: object
+      required: [id, category_id, amount, date, memo, created_at]
+      properties:
+        id:
+          type: string
+        category_id:
+          type: string
+        amount:
+          type: integer
+          format: int64
+          description: Amount in JPY (positive integer; sign is derived from the linked category's kind).
+        date:
+          type: string
+          format: date
+          description: Transaction date in YYYY-MM-DD.
+        memo:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
 paths:
   /me:
@@ -171,6 +192,122 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Organization"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden (not a member)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /orgs/{org_id}/transactions:
+    get:
+      operationId: list_transactions
+      summary: List transactions in the given month (member required)
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: month
+          in: query
+          required: true
+          description: Target month in YYYY-MM.
+          schema:
+            type: string
+            pattern: "^\\d{4}-\\d{2}$"
+        - name: category_id
+          in: query
+          required: false
+          description: Optional category filter (uses GSI1).
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          required: false
+          description: Opaque pagination cursor returned by a previous response.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Transaction"
+                  nextCursor:
+                    type: string
+        "400":
+          description: Invalid input (missing/invalid month or cursor)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden (not a member)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: create_transaction
+      summary: Create transaction (member required)
+      parameters:
+        - name: org_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [category_id, amount, date]
+              properties:
+                category_id:
+                  type: string
+                amount:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                date:
+                  type: string
+                  format: date
+                memo:
+                  type: string
+                  maxLength: 500
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Unauthorized
           content:
