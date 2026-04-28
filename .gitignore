@@ -3,6 +3,7 @@ dist/
 
 .env.local
 .env.*.local
+.envrc
 
 .DS_Store
 
