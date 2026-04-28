@@ -87,7 +87,9 @@ CloudFront Distribution
 
 `custom_error_response` (distribution 全体の 403/404 → `/index.html`) は採用しない。distribution-level で適用されるため `/api/*` の 403/404 まで `/index.html` に書き換えてしまい、API レスポンスが壊れる。
 
-代わりに web-client React を構築するタイミングで、default behavior に CloudFront Function (viewer-request) を attach し、`/api/*` を除外しつつ拡張子なしのパスを `/index.html` に rewrite する形で SPA fallback を実装する。これは AWS 公式が SPA + API 混在 distribution に推奨するパターン。
+代わりに default behavior に CloudFront Function (viewer-request) を attach し、拡張子を含まないパスを `/index.html` に rewrite する。`/api/*` は別の ordered cache behavior に分離されているため Function は発火しない (Function association は behavior 単位)。Function コードは `infrastructure/modules/web-client/spa-fallback.js` (runtime `cloudfront-js-2.0`)。
+
+判定は `request.uri.includes('.')` による単純な「ドット有無」のみ。アセットは `/assets/<hash>.js` 等で必ず拡張子を持ち、SPA route には拡張子を含むセグメントを設けない前提。
 
 ## Cognito Callback URL
 

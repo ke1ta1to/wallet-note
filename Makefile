@@ -26,6 +26,10 @@ tf-apply-dev:
 deploy-server-dev:
 	./scripts/deploy-server-dev.sh
 
+.PHONY: deploy-client-dev
+deploy-client-dev:
+	./scripts/deploy-client-dev.sh
+
 .PHONY: test
 test:
 	docker compose up -d dynamodb-local
