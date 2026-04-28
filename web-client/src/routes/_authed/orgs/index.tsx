@@ -2,6 +2,7 @@ import { meOrgsQuery } from "@/features/organization/queries";
 import {
   Alert,
   Badge,
+  Button,
   Card,
   Container,
   Group,
@@ -11,10 +12,10 @@ import {
   Title,
 } from "@mantine/core";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 
-export const Route = createFileRoute("/_authed/orgs")({
+export const Route = createFileRoute("/_authed/orgs/")({
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(meOrgsQuery),
   component: Orgs,
@@ -27,9 +28,12 @@ function Orgs() {
 
   return (
     <Container size="sm" py="xl">
-      <Title order={1} mb="md">
-        Organizations
-      </Title>
+      <Group justify="space-between" mb="md">
+        <Title order={1}>Organizations</Title>
+        <Button component={Link} to="/orgs/new">
+          + 新規作成
+        </Button>
+      </Group>
       {data.items.length === 0 ? (
         <Text c="dimmed">まだ組織がありません</Text>
       ) : (
@@ -56,9 +60,12 @@ function Orgs() {
 function OrgsPending() {
   return (
     <Container size="sm" py="xl">
-      <Title order={1} mb="md">
-        Organizations
-      </Title>
+      <Group justify="space-between" mb="md">
+        <Title order={1}>Organizations</Title>
+        <Button component={Link} to="/orgs/new">
+          + 新規作成
+        </Button>
+      </Group>
       <Stack>
         <Skeleton height={80} />
         <Skeleton height={80} />
@@ -72,9 +79,12 @@ function OrgsError({ error }: { error: unknown }) {
     (error as { message?: string })?.message ?? "読み込みに失敗しました";
   return (
     <Container size="sm" py="xl">
-      <Title order={1} mb="md">
-        Organizations
-      </Title>
+      <Group justify="space-between" mb="md">
+        <Title order={1}>Organizations</Title>
+        <Button component={Link} to="/orgs/new">
+          + 新規作成
+        </Button>
+      </Group>
       <Alert color="red">{message}</Alert>
     </Container>
   );

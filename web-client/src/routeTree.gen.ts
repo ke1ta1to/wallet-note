@@ -13,8 +13,9 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PublicSignInRouteImport } from './routes/_public/sign-in'
-import { Route as AuthedOrgsRouteImport } from './routes/_authed/orgs'
+import { Route as AuthedOrgsIndexRouteImport } from './routes/_authed/orgs/index'
 import { Route as PublicAuthCallbackRouteImport } from './routes/_public/auth.callback'
+import { Route as AuthedOrgsNewRouteImport } from './routes/_authed/orgs/new'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -34,9 +35,9 @@ const PublicSignInRoute = PublicSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => PublicRoute,
 } as any)
-const AuthedOrgsRoute = AuthedOrgsRouteImport.update({
-  id: '/orgs',
-  path: '/orgs',
+const AuthedOrgsIndexRoute = AuthedOrgsIndexRouteImport.update({
+  id: '/orgs/',
+  path: '/orgs/',
   getParentRoute: () => AuthedRoute,
 } as any)
 const PublicAuthCallbackRoute = PublicAuthCallbackRouteImport.update({
@@ -44,41 +45,50 @@ const PublicAuthCallbackRoute = PublicAuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => PublicRoute,
 } as any)
+const AuthedOrgsNewRoute = AuthedOrgsNewRouteImport.update({
+  id: '/orgs/new',
+  path: '/orgs/new',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/orgs': typeof AuthedOrgsRoute
   '/sign-in': typeof PublicSignInRoute
+  '/orgs/new': typeof AuthedOrgsNewRoute
   '/auth/callback': typeof PublicAuthCallbackRoute
+  '/orgs/': typeof AuthedOrgsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/orgs': typeof AuthedOrgsRoute
   '/sign-in': typeof PublicSignInRoute
+  '/orgs/new': typeof AuthedOrgsNewRoute
   '/auth/callback': typeof PublicAuthCallbackRoute
+  '/orgs': typeof AuthedOrgsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
-  '/_authed/orgs': typeof AuthedOrgsRoute
   '/_public/sign-in': typeof PublicSignInRoute
+  '/_authed/orgs/new': typeof AuthedOrgsNewRoute
   '/_public/auth/callback': typeof PublicAuthCallbackRoute
+  '/_authed/orgs/': typeof AuthedOrgsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/orgs' | '/sign-in' | '/auth/callback'
+  fullPaths: '/' | '/sign-in' | '/orgs/new' | '/auth/callback' | '/orgs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/orgs' | '/sign-in' | '/auth/callback'
+  to: '/' | '/sign-in' | '/orgs/new' | '/auth/callback' | '/orgs'
   id:
     | '__root__'
     | '/'
     | '/_authed'
     | '/_public'
-    | '/_authed/orgs'
     | '/_public/sign-in'
+    | '/_authed/orgs/new'
     | '/_public/auth/callback'
+    | '/_authed/orgs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,11 +127,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSignInRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_authed/orgs': {
-      id: '/_authed/orgs'
+    '/_authed/orgs/': {
+      id: '/_authed/orgs/'
       path: '/orgs'
-      fullPath: '/orgs'
-      preLoaderRoute: typeof AuthedOrgsRouteImport
+      fullPath: '/orgs/'
+      preLoaderRoute: typeof AuthedOrgsIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_public/auth/callback': {
@@ -131,15 +141,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAuthCallbackRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_authed/orgs/new': {
+      id: '/_authed/orgs/new'
+      path: '/orgs/new'
+      fullPath: '/orgs/new'
+      preLoaderRoute: typeof AuthedOrgsNewRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
-  AuthedOrgsRoute: typeof AuthedOrgsRoute
+  AuthedOrgsNewRoute: typeof AuthedOrgsNewRoute
+  AuthedOrgsIndexRoute: typeof AuthedOrgsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedOrgsRoute: AuthedOrgsRoute,
+  AuthedOrgsNewRoute: AuthedOrgsNewRoute,
+  AuthedOrgsIndexRoute: AuthedOrgsIndexRoute,
 }
 
 const AuthedRouteWithChildren =
