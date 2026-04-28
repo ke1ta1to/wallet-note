@@ -39,17 +39,24 @@ function Orgs() {
       ) : (
         <Stack>
           {data.items.map((m) => (
-            <Card key={m.org_id} withBorder padding="md">
-              <Group justify="space-between">
-                <Text fw={500}>{m.org_name ?? m.org_id}</Text>
-                <Badge variant={m.role === "owner" ? "filled" : "light"}>
-                  {m.role}
-                </Badge>
-              </Group>
-              <Text size="xs" c="dimmed" mt="xs">
-                {format(new Date(m.joined_at), "yyyy年M月d日")} に参加
-              </Text>
-            </Card>
+            <Link
+              key={m.org_id}
+              to="/orgs/$orgId"
+              params={{ orgId: m.org_id }}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <Card withBorder padding="md">
+                <Group justify="space-between">
+                  <Text fw={500}>{m.org_name ?? m.org_id}</Text>
+                  <Badge variant={m.role === "owner" ? "filled" : "light"}>
+                    {m.role}
+                  </Badge>
+                </Group>
+                <Text size="xs" c="dimmed" mt="xs">
+                  {format(new Date(m.joined_at), "yyyy年M月d日")} に参加
+                </Text>
+              </Card>
+            </Link>
           ))}
         </Stack>
       )}

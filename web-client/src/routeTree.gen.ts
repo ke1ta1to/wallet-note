@@ -16,6 +16,11 @@ import { Route as PublicSignInRouteImport } from './routes/_public/sign-in'
 import { Route as AuthedOrgsIndexRouteImport } from './routes/_authed/orgs/index'
 import { Route as PublicAuthCallbackRouteImport } from './routes/_public/auth.callback'
 import { Route as AuthedOrgsNewRouteImport } from './routes/_authed/orgs/new'
+import { Route as AuthedOrgsOrgIdRouteImport } from './routes/_authed/orgs/$orgId'
+import { Route as AuthedOrgsOrgIdIndexRouteImport } from './routes/_authed/orgs/$orgId/index'
+import { Route as AuthedOrgsOrgIdSummaryRouteImport } from './routes/_authed/orgs/$orgId/summary'
+import { Route as AuthedOrgsOrgIdSettingsRouteImport } from './routes/_authed/orgs/$orgId/settings'
+import { Route as AuthedOrgsOrgIdCategoriesRouteImport } from './routes/_authed/orgs/$orgId/categories'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -50,13 +55,44 @@ const AuthedOrgsNewRoute = AuthedOrgsNewRouteImport.update({
   path: '/orgs/new',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedOrgsOrgIdRoute = AuthedOrgsOrgIdRouteImport.update({
+  id: '/orgs/$orgId',
+  path: '/orgs/$orgId',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedOrgsOrgIdIndexRoute = AuthedOrgsOrgIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedOrgsOrgIdRoute,
+} as any)
+const AuthedOrgsOrgIdSummaryRoute = AuthedOrgsOrgIdSummaryRouteImport.update({
+  id: '/summary',
+  path: '/summary',
+  getParentRoute: () => AuthedOrgsOrgIdRoute,
+} as any)
+const AuthedOrgsOrgIdSettingsRoute = AuthedOrgsOrgIdSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthedOrgsOrgIdRoute,
+} as any)
+const AuthedOrgsOrgIdCategoriesRoute =
+  AuthedOrgsOrgIdCategoriesRouteImport.update({
+    id: '/categories',
+    path: '/categories',
+    getParentRoute: () => AuthedOrgsOrgIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof PublicSignInRoute
+  '/orgs/$orgId': typeof AuthedOrgsOrgIdRouteWithChildren
   '/orgs/new': typeof AuthedOrgsNewRoute
   '/auth/callback': typeof PublicAuthCallbackRoute
   '/orgs/': typeof AuthedOrgsIndexRoute
+  '/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRoute
+  '/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
+  '/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/orgs/$orgId/': typeof AuthedOrgsOrgIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -64,6 +100,10 @@ export interface FileRoutesByTo {
   '/orgs/new': typeof AuthedOrgsNewRoute
   '/auth/callback': typeof PublicAuthCallbackRoute
   '/orgs': typeof AuthedOrgsIndexRoute
+  '/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRoute
+  '/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
+  '/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/orgs/$orgId': typeof AuthedOrgsOrgIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,24 +111,53 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_public/sign-in': typeof PublicSignInRoute
+  '/_authed/orgs/$orgId': typeof AuthedOrgsOrgIdRouteWithChildren
   '/_authed/orgs/new': typeof AuthedOrgsNewRoute
   '/_public/auth/callback': typeof PublicAuthCallbackRoute
   '/_authed/orgs/': typeof AuthedOrgsIndexRoute
+  '/_authed/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRoute
+  '/_authed/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
+  '/_authed/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/_authed/orgs/$orgId/': typeof AuthedOrgsOrgIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/orgs/new' | '/auth/callback' | '/orgs/'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/orgs/$orgId'
+    | '/orgs/new'
+    | '/auth/callback'
+    | '/orgs/'
+    | '/orgs/$orgId/categories'
+    | '/orgs/$orgId/settings'
+    | '/orgs/$orgId/summary'
+    | '/orgs/$orgId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/orgs/new' | '/auth/callback' | '/orgs'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/orgs/new'
+    | '/auth/callback'
+    | '/orgs'
+    | '/orgs/$orgId/categories'
+    | '/orgs/$orgId/settings'
+    | '/orgs/$orgId/summary'
+    | '/orgs/$orgId'
   id:
     | '__root__'
     | '/'
     | '/_authed'
     | '/_public'
     | '/_public/sign-in'
+    | '/_authed/orgs/$orgId'
     | '/_authed/orgs/new'
     | '/_public/auth/callback'
     | '/_authed/orgs/'
+    | '/_authed/orgs/$orgId/categories'
+    | '/_authed/orgs/$orgId/settings'
+    | '/_authed/orgs/$orgId/summary'
+    | '/_authed/orgs/$orgId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -148,15 +217,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedOrgsNewRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/orgs/$orgId': {
+      id: '/_authed/orgs/$orgId'
+      path: '/orgs/$orgId'
+      fullPath: '/orgs/$orgId'
+      preLoaderRoute: typeof AuthedOrgsOrgIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/orgs/$orgId/': {
+      id: '/_authed/orgs/$orgId/'
+      path: '/'
+      fullPath: '/orgs/$orgId/'
+      preLoaderRoute: typeof AuthedOrgsOrgIdIndexRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
+    '/_authed/orgs/$orgId/summary': {
+      id: '/_authed/orgs/$orgId/summary'
+      path: '/summary'
+      fullPath: '/orgs/$orgId/summary'
+      preLoaderRoute: typeof AuthedOrgsOrgIdSummaryRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
+    '/_authed/orgs/$orgId/settings': {
+      id: '/_authed/orgs/$orgId/settings'
+      path: '/settings'
+      fullPath: '/orgs/$orgId/settings'
+      preLoaderRoute: typeof AuthedOrgsOrgIdSettingsRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
+    '/_authed/orgs/$orgId/categories': {
+      id: '/_authed/orgs/$orgId/categories'
+      path: '/categories'
+      fullPath: '/orgs/$orgId/categories'
+      preLoaderRoute: typeof AuthedOrgsOrgIdCategoriesRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
   }
 }
 
+interface AuthedOrgsOrgIdRouteChildren {
+  AuthedOrgsOrgIdCategoriesRoute: typeof AuthedOrgsOrgIdCategoriesRoute
+  AuthedOrgsOrgIdSettingsRoute: typeof AuthedOrgsOrgIdSettingsRoute
+  AuthedOrgsOrgIdSummaryRoute: typeof AuthedOrgsOrgIdSummaryRoute
+  AuthedOrgsOrgIdIndexRoute: typeof AuthedOrgsOrgIdIndexRoute
+}
+
+const AuthedOrgsOrgIdRouteChildren: AuthedOrgsOrgIdRouteChildren = {
+  AuthedOrgsOrgIdCategoriesRoute: AuthedOrgsOrgIdCategoriesRoute,
+  AuthedOrgsOrgIdSettingsRoute: AuthedOrgsOrgIdSettingsRoute,
+  AuthedOrgsOrgIdSummaryRoute: AuthedOrgsOrgIdSummaryRoute,
+  AuthedOrgsOrgIdIndexRoute: AuthedOrgsOrgIdIndexRoute,
+}
+
+const AuthedOrgsOrgIdRouteWithChildren = AuthedOrgsOrgIdRoute._addFileChildren(
+  AuthedOrgsOrgIdRouteChildren,
+)
+
 interface AuthedRouteChildren {
+  AuthedOrgsOrgIdRoute: typeof AuthedOrgsOrgIdRouteWithChildren
   AuthedOrgsNewRoute: typeof AuthedOrgsNewRoute
   AuthedOrgsIndexRoute: typeof AuthedOrgsIndexRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedOrgsOrgIdRoute: AuthedOrgsOrgIdRouteWithChildren,
   AuthedOrgsNewRoute: AuthedOrgsNewRoute,
   AuthedOrgsIndexRoute: AuthedOrgsIndexRoute,
 }
