@@ -16,6 +16,8 @@ React 19 + Vite + TanStack Router + Mantine。スマホで触ることを前提�
 | Auth | AWS Amplify v6 (`aws-amplify` umbrella、import は `aws-amplify` / `aws-amplify/auth` / `aws-amplify/utils` で tree-shake、CLI/UI 系は使わない) |
 | API クライアント | openapi-typescript + openapi-fetch |
 | Search validation | valibot + `@tanstack/valibot-adapter` |
+| Form | `@mantine/form` (Mantine 9 built-in `schemaResolver` で valibot を直接使う、3rd party resolver は使わない) |
+| Icons | `@tabler/icons-react` |
 
 ## URL 設計
 
@@ -45,6 +47,24 @@ TanStack Router の pathless layouts (`_public`、`_authed`) で認証ガード�
 ヘッダには org 名と切替メニューを置く。詳細画面では左に戻る矢印を出す (iOS PWA でブラウザの戻るが使えないケース対策)。フッタは下タブにして、取引・集計・カテゴリ・設定の4つを並べる。
 
 軽い操作 (取引やカテゴリの追加・編集) は Drawer (下スライド) で開いて、× で閉じる。設定系 (メンバー管理、org 設定) は遷移を伴うフルページにし、ヘッダ左に戻る矢印を置く。
+
+## フォーム
+
+`@mantine/form` の `useForm` + `schemaResolver(schema, { sync: true })` を canonical pattern として採用する。schema は valibot で書く (Standard Schema 対応のため Mantine 9 built-in resolver で直接読める、`mantine-form-valibot-resolver` などの 3rd party は不要)。
+
+```tsx
+const form = useForm({
+  initialValues: { name: "" },
+  validate: schemaResolver(NewOrgSchema, { sync: true }),
+});
+
+<TextInput {...form.getInputProps("name")} label="組織名" required />
+<form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
+```
+
+`getInputProps` が `value` / `onChange` / `error` をまとめて返すため Mantine input にそのまま spread できる。
+
+ColorSwatch grid のような `getInputProps` に乗らない custom UI は `form.values.<field>` / `form.setFieldValue('<field>', v)` で直接読み書きする。バリデーションエラーは `form.errors.<field>` で取れる。
 
 ## カテゴリ色パレット
 

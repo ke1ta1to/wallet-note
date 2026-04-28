@@ -13,10 +13,9 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { schemaResolver, useForm } from "@mantine/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import * as v from "valibot";
 
 export const Route = createFileRoute("/_authed/orgs/new")({
   component: NewOrg,
@@ -33,8 +32,10 @@ function NewOrg() {
     },
   });
 
-  const [name, setName] = useState("");
-  const [fieldError, setFieldError] = useState<string | null>(null);
+  const form = useForm({
+    initialValues: { name: "" },
+    validate: schemaResolver(NewOrgSchema, { sync: true }),
+  });
 
   const submitError = mutation.isError
     ? ((mutation.error as { message?: string })?.message ??
@@ -55,24 +56,11 @@ function NewOrg() {
       <Title order={1} mb="md">
         新規組織を作成
       </Title>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const result = v.safeParse(NewOrgSchema, { name });
-          if (!result.success) {
-            setFieldError(result.issues[0].message);
-            return;
-          }
-          setFieldError(null);
-          mutation.mutate(result.output);
-        }}
-      >
+      <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
         <Stack>
           <TextInput
             label="組織名"
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-            error={fieldError}
+            {...form.getInputProps("name")}
             maxLength={100}
             required
             autoFocus

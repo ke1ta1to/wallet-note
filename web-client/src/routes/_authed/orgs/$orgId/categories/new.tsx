@@ -15,11 +15,14 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
+import { schemaResolver, useForm } from "@mantine/form";
 import { IconCheck } from "@tabler/icons-react";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import * as v from "valibot";
 
 export const Route = createFileRoute("/_authed/orgs/$orgId/categories/new")({
   component: NewCategoryDrawer,
@@ -32,8 +35,7 @@ function NewCategoryDrawer() {
   const { data: existing } = useSuspenseQuery(categoriesQuery(orgId));
 
   const usedColors = new Set(existing.items.map((c) => c.color));
-  const availableColors = categoryPalette.filter((hex) => !usedColors.has(hex));
-  const allUsed = availableColors.length === 0;
+  const allUsed = categoryPalette.every((hex) => usedColors.has(hex));
 
   const close = () =>
     navigate({ to: "/orgs/$orgId/categories", params: { orgId } });
@@ -48,14 +50,16 @@ function NewCategoryDrawer() {
     },
   });
 
-  const [name, setName] = useState("");
-  const [kind, setKind] = useState<"expense" | "income">("expense");
-  const [color, setColor] = useState<string>(
-    availableColors[0] ?? categoryPalette[0],
-  );
-  const [errors, setErrors] = useState<Partial<Record<"name" | "color", string>>>(
-    {},
-  );
+  const form = useForm({
+    initialValues: {
+      name: "",
+      kind: "expense" as "expense" | "income",
+      color:
+        categoryPalette.find((hex) => !usedColors.has(hex)) ??
+        categoryPalette[0],
+    },
+    validate: schemaResolver(NewCategorySchema, { sync: true }),
+  });
 
   const submitError = mutation.isError
     ? ((mutation.error as { message?: string })?.message ??
@@ -70,37 +74,18 @@ function NewCategoryDrawer() {
       size="auto"
       title="新規カテゴリ"
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const result = v.safeParse(NewCategorySchema, { name, kind, color });
-          if (!result.success) {
-            const next: Partial<Record<"name" | "color", string>> = {};
-            for (const issue of result.issues) {
-              const field = issue.path?.[0]?.key as "name" | "color" | undefined;
-              if (field && !next[field]) next[field] = issue.message;
-            }
-            setErrors(next);
-            return;
-          }
-          setErrors({});
-          mutation.mutate(result.output);
-        }}
-      >
+      <form onSubmit={form.onSubmit((values) => mutation.mutate(values))}>
         <Stack>
           <TextInput
             label="名前"
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-            error={errors.name}
+            {...form.getInputProps("name")}
             maxLength={100}
             required
             autoFocus
           />
           <SegmentedControl
             fullWidth
-            value={kind}
-            onChange={(v) => setKind(v as "expense" | "income")}
+            {...form.getInputProps("kind")}
             data={[
               { label: "支出", value: "expense" },
               { label: "収入", value: "income" },
@@ -111,7 +96,7 @@ function NewCategoryDrawer() {
             <Group gap="xs">
               {categoryPalette.map((hex) => {
                 const isUsed = usedColors.has(hex);
-                const isSelected = !isUsed && color === hex;
+                const isSelected = !isUsed && form.values.color === hex;
                 return (
                   <ColorSwatch
                     key={hex}
@@ -119,7 +104,7 @@ function NewCategoryDrawer() {
                     type="button"
                     color={hex}
                     size={36}
-                    onClick={() => !isUsed && setColor(hex)}
+                    onClick={() => !isUsed && form.setFieldValue("color", hex)}
                     disabled={isUsed}
                     style={{
                       cursor: isUsed ? "not-allowed" : "pointer",
@@ -143,9 +128,9 @@ function NewCategoryDrawer() {
                 全色が使用中です。既存カテゴリを編集または削除してください。
               </Alert>
             )}
-            {errors.color && (
+            {form.errors.color && (
               <Text size="xs" c="red">
-                {errors.color}
+                {form.errors.color}
               </Text>
             )}
           </Stack>
