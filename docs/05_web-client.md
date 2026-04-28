@@ -46,6 +46,32 @@ TanStack Router の pathless layouts (`_public`、`_authed`) で認証ガード�
 
 軽い操作 (取引やカテゴリの追加・編集) は Drawer (下スライド) で開いて、× で閉じる。設定系 (メンバー管理、org 設定) は遷移を伴うフルページにし、ヘッダ左に戻る矢印を置く。
 
+## カテゴリ色パレット
+
+カテゴリ作成時の色は固定パレット (12 色) からのみ選ばせる。ユーザの自由 hex 入力は受け付けない。理由はモバイル UI で迷わない選択肢量、Mantine theme との視覚整合、表示側の統一感維持。
+
+採用色は Mantine の各 color の shade 6。rainbow 順 (warm → cool):
+
+<!-- prettier-ignore -->
+| hex | Mantine token |
+|---|---|
+| `#fa5252` | red |
+| `#fd7e14` | orange |
+| `#fab005` | yellow |
+| `#82c91e` | lime |
+| `#40c057` | green |
+| `#12b886` | teal |
+| `#15aabf` | cyan |
+| `#228be6` | blue |
+| `#4c6ef5` | indigo |
+| `#7950f2` | violet |
+| `#be4bdb` | grape |
+| `#e64980` | pink |
+
+実体は `web-client/src/features/category/palette.ts` を SOT とする。バックエンドは hex format のみ検証する loose な validation で、過去データはパレット改訂後も表示できる。パレットへ色を増減する際はこの表と `palette.ts` を同時更新する。
+
+色は org 内で一意 (kind を跨いで重複不可)。色 = カテゴリの視覚 ID という建付けで、`赤の食費` と `赤の給与` が並ぶと取引一覧 / chart で判別不能になる事を避ける。kind は色とは独立した軸として Badge / 符号で表現する。新規作成 UI は使用中の色を **dimmed + disabled** として表示する (非表示にしない、減ったように見えて混乱するため)。全色使用時は作成不可とする (上限 12 カテゴリ)。バックエンドは引き続き hex 形式のみ検証する (race の整合維持はフロント責務)。
+
 ## 状態管理
 
 サーバーから取得するデータは TanStack Query で扱い、各 feature の `queries.ts` に hooks をまとめる。UI 状態 (モーダル open など) は Zustand を `stores/` に集約する。選択中の org のような URL に表れるものは TanStack Router の `params` / `search` から取る。
