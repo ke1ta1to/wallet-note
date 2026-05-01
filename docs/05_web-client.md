@@ -27,9 +27,10 @@ React 19 + Vite + TanStack Router + Mantine。スマホで触ることを前提�
 /invite          ?code=AB7XQ9                招待コード入力 / 受諾
 /orgs                                        所属 org 一覧 (org 選択)
 /orgs/new                                    新規 org 作成
-/orgs/:orgId                                 取引一覧 (メイン画面)
-/orgs/:orgId/transactions/new                取引追加
-/orgs/:orgId/transactions/:txId/edit         取引編集
+/orgs/:orgId                                 → /orgs/:orgId/transactions に redirect
+/orgs/:orgId/transactions?month=YYYY-MM      取引一覧 (メイン画面)
+/orgs/:orgId/transactions/new                取引追加 (Drawer)
+/orgs/:orgId/transactions/:txId/edit         取引編集 (Drawer)
 /orgs/:orgId/categories                      カテゴリ一覧
 /orgs/:orgId/categories/new                  カテゴリ追加
 /orgs/:orgId/categories/:categoryId/edit     カテゴリ編集

@@ -18,9 +18,11 @@ import { Route as PublicAuthCallbackRouteImport } from './routes/_public/auth.ca
 import { Route as AuthedOrgsNewRouteImport } from './routes/_authed/orgs/new'
 import { Route as AuthedOrgsOrgIdRouteImport } from './routes/_authed/orgs/$orgId'
 import { Route as AuthedOrgsOrgIdIndexRouteImport } from './routes/_authed/orgs/$orgId/index'
+import { Route as AuthedOrgsOrgIdTransactionsRouteImport } from './routes/_authed/orgs/$orgId/transactions'
 import { Route as AuthedOrgsOrgIdSummaryRouteImport } from './routes/_authed/orgs/$orgId/summary'
 import { Route as AuthedOrgsOrgIdSettingsRouteImport } from './routes/_authed/orgs/$orgId/settings'
 import { Route as AuthedOrgsOrgIdCategoriesRouteImport } from './routes/_authed/orgs/$orgId/categories'
+import { Route as AuthedOrgsOrgIdTransactionsNewRouteImport } from './routes/_authed/orgs/$orgId/transactions/new'
 import { Route as AuthedOrgsOrgIdCategoriesNewRouteImport } from './routes/_authed/orgs/$orgId/categories/new'
 
 const PublicRoute = PublicRouteImport.update({
@@ -66,6 +68,12 @@ const AuthedOrgsOrgIdIndexRoute = AuthedOrgsOrgIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedOrgsOrgIdRoute,
 } as any)
+const AuthedOrgsOrgIdTransactionsRoute =
+  AuthedOrgsOrgIdTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthedOrgsOrgIdRoute,
+  } as any)
 const AuthedOrgsOrgIdSummaryRoute = AuthedOrgsOrgIdSummaryRouteImport.update({
   id: '/summary',
   path: '/summary',
@@ -81,6 +89,12 @@ const AuthedOrgsOrgIdCategoriesRoute =
     id: '/categories',
     path: '/categories',
     getParentRoute: () => AuthedOrgsOrgIdRoute,
+  } as any)
+const AuthedOrgsOrgIdTransactionsNewRoute =
+  AuthedOrgsOrgIdTransactionsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthedOrgsOrgIdTransactionsRoute,
   } as any)
 const AuthedOrgsOrgIdCategoriesNewRoute =
   AuthedOrgsOrgIdCategoriesNewRouteImport.update({
@@ -99,8 +113,10 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRouteWithChildren
   '/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
   '/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/orgs/$orgId/transactions': typeof AuthedOrgsOrgIdTransactionsRouteWithChildren
   '/orgs/$orgId/': typeof AuthedOrgsOrgIdIndexRoute
   '/orgs/$orgId/categories/new': typeof AuthedOrgsOrgIdCategoriesNewRoute
+  '/orgs/$orgId/transactions/new': typeof AuthedOrgsOrgIdTransactionsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -111,8 +127,10 @@ export interface FileRoutesByTo {
   '/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRouteWithChildren
   '/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
   '/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/orgs/$orgId/transactions': typeof AuthedOrgsOrgIdTransactionsRouteWithChildren
   '/orgs/$orgId': typeof AuthedOrgsOrgIdIndexRoute
   '/orgs/$orgId/categories/new': typeof AuthedOrgsOrgIdCategoriesNewRoute
+  '/orgs/$orgId/transactions/new': typeof AuthedOrgsOrgIdTransactionsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,8 +145,10 @@ export interface FileRoutesById {
   '/_authed/orgs/$orgId/categories': typeof AuthedOrgsOrgIdCategoriesRouteWithChildren
   '/_authed/orgs/$orgId/settings': typeof AuthedOrgsOrgIdSettingsRoute
   '/_authed/orgs/$orgId/summary': typeof AuthedOrgsOrgIdSummaryRoute
+  '/_authed/orgs/$orgId/transactions': typeof AuthedOrgsOrgIdTransactionsRouteWithChildren
   '/_authed/orgs/$orgId/': typeof AuthedOrgsOrgIdIndexRoute
   '/_authed/orgs/$orgId/categories/new': typeof AuthedOrgsOrgIdCategoriesNewRoute
+  '/_authed/orgs/$orgId/transactions/new': typeof AuthedOrgsOrgIdTransactionsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,8 +162,10 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/categories'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/summary'
+    | '/orgs/$orgId/transactions'
     | '/orgs/$orgId/'
     | '/orgs/$orgId/categories/new'
+    | '/orgs/$orgId/transactions/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -154,8 +176,10 @@ export interface FileRouteTypes {
     | '/orgs/$orgId/categories'
     | '/orgs/$orgId/settings'
     | '/orgs/$orgId/summary'
+    | '/orgs/$orgId/transactions'
     | '/orgs/$orgId'
     | '/orgs/$orgId/categories/new'
+    | '/orgs/$orgId/transactions/new'
   id:
     | '__root__'
     | '/'
@@ -169,8 +193,10 @@ export interface FileRouteTypes {
     | '/_authed/orgs/$orgId/categories'
     | '/_authed/orgs/$orgId/settings'
     | '/_authed/orgs/$orgId/summary'
+    | '/_authed/orgs/$orgId/transactions'
     | '/_authed/orgs/$orgId/'
     | '/_authed/orgs/$orgId/categories/new'
+    | '/_authed/orgs/$orgId/transactions/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -244,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedOrgsOrgIdIndexRouteImport
       parentRoute: typeof AuthedOrgsOrgIdRoute
     }
+    '/_authed/orgs/$orgId/transactions': {
+      id: '/_authed/orgs/$orgId/transactions'
+      path: '/transactions'
+      fullPath: '/orgs/$orgId/transactions'
+      preLoaderRoute: typeof AuthedOrgsOrgIdTransactionsRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
     '/_authed/orgs/$orgId/summary': {
       id: '/_authed/orgs/$orgId/summary'
       path: '/summary'
@@ -264,6 +297,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/orgs/$orgId/categories'
       preLoaderRoute: typeof AuthedOrgsOrgIdCategoriesRouteImport
       parentRoute: typeof AuthedOrgsOrgIdRoute
+    }
+    '/_authed/orgs/$orgId/transactions/new': {
+      id: '/_authed/orgs/$orgId/transactions/new'
+      path: '/new'
+      fullPath: '/orgs/$orgId/transactions/new'
+      preLoaderRoute: typeof AuthedOrgsOrgIdTransactionsNewRouteImport
+      parentRoute: typeof AuthedOrgsOrgIdTransactionsRoute
     }
     '/_authed/orgs/$orgId/categories/new': {
       id: '/_authed/orgs/$orgId/categories/new'
@@ -289,10 +329,25 @@ const AuthedOrgsOrgIdCategoriesRouteWithChildren =
     AuthedOrgsOrgIdCategoriesRouteChildren,
   )
 
+interface AuthedOrgsOrgIdTransactionsRouteChildren {
+  AuthedOrgsOrgIdTransactionsNewRoute: typeof AuthedOrgsOrgIdTransactionsNewRoute
+}
+
+const AuthedOrgsOrgIdTransactionsRouteChildren: AuthedOrgsOrgIdTransactionsRouteChildren =
+  {
+    AuthedOrgsOrgIdTransactionsNewRoute: AuthedOrgsOrgIdTransactionsNewRoute,
+  }
+
+const AuthedOrgsOrgIdTransactionsRouteWithChildren =
+  AuthedOrgsOrgIdTransactionsRoute._addFileChildren(
+    AuthedOrgsOrgIdTransactionsRouteChildren,
+  )
+
 interface AuthedOrgsOrgIdRouteChildren {
   AuthedOrgsOrgIdCategoriesRoute: typeof AuthedOrgsOrgIdCategoriesRouteWithChildren
   AuthedOrgsOrgIdSettingsRoute: typeof AuthedOrgsOrgIdSettingsRoute
   AuthedOrgsOrgIdSummaryRoute: typeof AuthedOrgsOrgIdSummaryRoute
+  AuthedOrgsOrgIdTransactionsRoute: typeof AuthedOrgsOrgIdTransactionsRouteWithChildren
   AuthedOrgsOrgIdIndexRoute: typeof AuthedOrgsOrgIdIndexRoute
 }
 
@@ -300,6 +355,8 @@ const AuthedOrgsOrgIdRouteChildren: AuthedOrgsOrgIdRouteChildren = {
   AuthedOrgsOrgIdCategoriesRoute: AuthedOrgsOrgIdCategoriesRouteWithChildren,
   AuthedOrgsOrgIdSettingsRoute: AuthedOrgsOrgIdSettingsRoute,
   AuthedOrgsOrgIdSummaryRoute: AuthedOrgsOrgIdSummaryRoute,
+  AuthedOrgsOrgIdTransactionsRoute:
+    AuthedOrgsOrgIdTransactionsRouteWithChildren,
   AuthedOrgsOrgIdIndexRoute: AuthedOrgsOrgIdIndexRoute,
 }
 

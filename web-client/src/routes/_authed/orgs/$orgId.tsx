@@ -26,10 +26,10 @@ export const Route = createFileRoute("/_authed/orgs/$orgId")({
 });
 
 const tabs = [
-  { to: "/orgs/$orgId", icon: IconReceipt, label: "取引", exact: true },
-  { to: "/orgs/$orgId/summary", icon: IconChartBar, label: "集計", exact: false },
-  { to: "/orgs/$orgId/categories", icon: IconCategory, label: "カテゴリ", exact: false },
-  { to: "/orgs/$orgId/settings", icon: IconSettings, label: "設定", exact: false },
+  { to: "/orgs/$orgId/transactions", icon: IconReceipt, label: "取引" },
+  { to: "/orgs/$orgId/summary", icon: IconChartBar, label: "集計" },
+  { to: "/orgs/$orgId/categories", icon: IconCategory, label: "カテゴリ" },
+  { to: "/orgs/$orgId/settings", icon: IconSettings, label: "設定" },
 ] as const;
 
 function OrgLayout() {
@@ -64,12 +64,11 @@ function OrgLayout() {
 
       <AppShell.Footer>
         <Group h="100%" gap={0} wrap="nowrap">
-          {tabs.map(({ to, icon: Icon, label, exact }) => (
+          {tabs.map(({ to, icon: Icon, label }) => (
             <Link
               key={to}
               to={to}
               params={{ orgId }}
-              activeOptions={{ exact }}
               style={{ flex: 1, textDecoration: "none", height: "100%" }}
             >
               {({ isActive }) => (
@@ -78,7 +77,9 @@ function OrgLayout() {
                   align="center"
                   justify="center"
                   gap={2}
-                  c={isActive ? "var(--mantine-primary-color-filled)" : "dimmed"}
+                  c={
+                    isActive ? "var(--mantine-primary-color-filled)" : "dimmed"
+                  }
                 >
                   <Icon size={20} />
                   <Text size="xs">{label}</Text>
